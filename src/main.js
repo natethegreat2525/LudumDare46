@@ -5,6 +5,7 @@ import { Camera } from "./camera";
 import { Key } from "./key";
 import { Player } from "./player";
 import { EntityManager } from "./entitymanager";
+import { FluidManager, FluidParticle } from "./fluidmanager";
 
 let ctx = null;
 let grid = new Grid(1200, 1200);
@@ -12,9 +13,9 @@ const screenW = 800;
 const screenH = 600;
 
 let entityManager = new EntityManager();
+let fluidManager = new FluidManager();
 
 let player = new Player(800, 800);
-//let player = new Player(0, 0);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
 let oldTime = 0;
 
@@ -25,10 +26,13 @@ export function startGame(context) {
 
     Mouse.init(ctx.canvas);
 
-    grid.tiles = generatePlanet(1200, "test", 550, 4, .5, 50);
+    grid.tiles = generatePlanet(1200, "test" + Math.random(), 550, 4, .5, 50);
     grid.buildChunks();
 
     entityManager.addEntity(player);
+    for (let i = 0; i < 2000; i++) {
+        fluidManager.particles.push(new FluidParticle(500 + Math.random()*500, 500 + Math.random() * 500));
+    }
 
     if (ctx) {
         requestAnimationFrame(render);
@@ -51,6 +55,7 @@ function render(delta) {
 
     entityManager.update(grid, dt);
     grid.rebuildDirty();
+    fluidManager.update(grid, 1);
     
     ctx.transform(1,0,0,1,screenW/2, screenH/2);
     ctx.transform(cam.zoom, 0,
@@ -63,6 +68,7 @@ function render(delta) {
     grid.update();
     grid.renderChunks(ctx);
     entityManager.render(ctx);
+    fluidManager.render(ctx);
 
     requestAnimationFrame(render);
 }

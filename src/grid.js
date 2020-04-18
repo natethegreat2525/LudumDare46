@@ -122,7 +122,7 @@ export class Grid {
             for (let y = 0; y  < this.chunkHeight; y++) {
                 let chunk = this.chunks[x + y*this.chunkWidth];
                 if (!chunk.image) {
-                    console.log("chunk not found x:" + x + " y: " + y);
+                    //console.log("chunk not found x:" + x + " y: " + y);
                     continue;
                 }
                 //debugger;
