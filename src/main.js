@@ -20,7 +20,6 @@ let player = new Player(800, 800);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
 let hud = new HUD(screenW, screenH);
 let oldTime = 0;
-
 let entities = [];
 
 export function startGame(context) {
@@ -35,6 +34,7 @@ export function startGame(context) {
     for (let i = 0; i < 2000; i++) {
         fluidManager.particles.push(new FluidParticle(500 + Math.random()*500, 500 + Math.random() * 500));
     }
+    entities.push(player);
 
     if (ctx) {
         requestAnimationFrame(render);
@@ -73,6 +73,8 @@ function render(delta) {
     grid.renderChunks(ctx);
     entityManager.render(ctx);
     fluidManager.render(ctx);
+    entities.forEach(e => e.render(ctx));
+
     hud.render(ctx);
 
     requestAnimationFrame(render);

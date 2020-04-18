@@ -4,9 +4,6 @@ export class HUD {
         this.width = w;
     }
 
-    buildHUD(player) {
-    }
-
     render(ctx) {
         ctx.resetTransform();
         ctx.fillStyle = 'rgba(0, 255, 0, .8)';
