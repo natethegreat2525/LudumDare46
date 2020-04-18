@@ -7,8 +7,12 @@ export const Mouse = {
     vy: 0,
     leftDown: false,
     rightDown: false,
+    width: 0,
+    height: 0,
 
     init: function(el) {
+        this.width = el.width;
+        this.height = el.height;
         el.onmousemove = (e) => {
             this.ox = this.x;
             this.oy = this.y;
