@@ -1,15 +1,16 @@
-import { Ball } from "./ball";
-import { Key } from "./key";
+//import { Key } from "./key";
 import { Mouse } from "./mouse";
 import { generatePlanet } from "./terrain";
+import { Grid } from "./grid";
 
 let ctx = null;
-let balls = [];
-let terrain = null;
+let grid = new Grid(100, 100);
 
+/*
 function rand(low, high) {
     return Math.random()*(high-low)+low;
 }
+*/
 
 export function startGame(context) {
     ctx = context;
@@ -21,10 +22,6 @@ export function startGame(context) {
     if (ctx) {
         requestAnimationFrame(render);
     }
-}
-
-function randomBall() {
-    return new Ball([rand(0,800), rand(0,600)], [rand(-1,1), rand(-1,1)]);
 }
 
 function clear() {
@@ -51,16 +48,7 @@ function render() {
             }
         }
     }
-    //console.log(Mouse.x, Mouse.y, Mouse.leftDown, Mouse.rightDown);
 
-    for (let ball of balls) {
-        ball.update();
-        ball.render(ctx);
-    }
-
-    if (Key.isDown(Key.SPACE)) {
-        balls.push(randomBall());
-    }
-
+    grid.render(ctx);
     requestAnimationFrame(render);
 }
