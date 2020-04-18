@@ -2,6 +2,7 @@ import { Mouse } from "./mouse";
 import { generatePlanet } from "./terrain";
 import { Grid } from "./grid";
 import { Camera } from "./camera";
+import { HUD } from "./hud";
 import { Key } from "./key";
 import { Player } from "./player";
 import { EntityManager } from "./entitymanager";
@@ -17,6 +18,7 @@ let fluidManager = new FluidManager();
 
 let player = new Player(800, 800);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
+let hud = new HUD(screenW, screenH);
 let oldTime = 0;
 
 let entities = [];
@@ -57,26 +59,21 @@ function render(delta) {
     grid.rebuildDirty();
     fluidManager.update(grid, 1);
     
-    ctx.transform(1,0,0,1,screenW/2, screenH/2);
+    ctx.transform(1, 0,
+                  0, 1,
+                  screenW/2, screenH/2);
     ctx.transform(cam.zoom, 0,
                   0, cam.zoom,
                   0, 0);
-    ctx.transform(1,0,
-                  0,1,
+    ctx.transform(1, 0,
+                  0, 1,
                   -Math.floor(cam.getCorner().x), -Math.floor(cam.getCorner().y));
-
     grid.update();
+
     grid.renderChunks(ctx);
     entityManager.render(ctx);
     fluidManager.render(ctx);
-
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle = 'rgba(0, 255, 0, .8)';
-    ctx.fillRect(10, 10, 100, 10);
-    ctx.fillStyle = 'rgba(255, 255, 255, .8)';
-    ctx.fillRect(screenW-110, screenH-20, 100, 10);
-
-    cam.renderHUD(ctx);
+    hud.render(ctx);
 
     requestAnimationFrame(render);
 }
