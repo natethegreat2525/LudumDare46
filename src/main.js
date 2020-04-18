@@ -30,7 +30,6 @@ function render() {
     clear();
     let vec = {x: 0, y: 0};
     let lastVec = {x: 0, y: 0};
-    let padding = 10;
     for (let i = 0; i < grid.tiles.length; i++) {
         vec = grid.getVector2(i);
         vec.x *= grid.tileSize;
