@@ -3,7 +3,7 @@ export class Grid {
         this.length = l;
         this.width = w;
         this.tileSize = 4;
-        this.tiles = new Int8Array(l * w);
+        this.tiles = null;
         this.colors =          [null, null, "#765432", "#888888", "#009900"];
         this.colorsDark = [null, "#444444", "#382716", "#333333", "#004900"];
         this.chunkWidth = Math.ceil(w/CHUNK_WIDTH);
@@ -99,7 +99,10 @@ export class Grid {
         }
     }*/
 
-    renderChunks(ctx, offsX, offsY, sizeX, sizeY) {
+    renderChunks(ctx, camVec, sizeX, sizeY, zoom) {
+        // TODO(nick): select chunk(s) to render
+        let renderChunks = [];
+
         for (let x = 0; x < this.chunkWidth; x++) {
             for (let y = 0; y  < this.chunkHeight; y++) {
                 let chunk = this.chunks[x + y*this.chunkWidth];
@@ -125,6 +128,8 @@ class Chunk {
     }
 
     rebuild(grid) {
+        // TODO(nick): debug visualization
+        let padding = 1;
         let canv = document.createElement('canvas');
         canv.width = CHUNK_WIDTH*grid.tileSize;
         canv.height = CHUNK_WIDTH*grid.tileSize;
@@ -158,7 +163,7 @@ class Chunk {
                     if (color !== ctx.fillStyle) {
                         ctx.fillStyle = color;
                     }
-                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize, grid.tileSize);
+                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize-padding, grid.tileSize-padding);
                 }
             }
         }
