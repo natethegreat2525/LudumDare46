@@ -76,5 +76,7 @@ function render(delta) {
     ctx.fillStyle = 'rgba(255, 255, 255, .8)';
     ctx.fillRect(screenW-110, screenH-20, 100, 10);
 
+    cam.renderHUD(ctx);
+
     requestAnimationFrame(render);
 }

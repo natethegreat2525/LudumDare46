@@ -30,6 +30,14 @@ export class Grid {
         }
     }
 
+    getChunk(vec) {
+        // TODO(nick)
+        let x = vec.x / CHUNK_WIDTH;
+        let y = vec.y / CHUNK_WIDTH;
+        let chunk = this.chunks[x + y];
+        return chunk;
+    }
+
     boundsCheck(x, y) {
         return x >= 0 && y >= 0 && x < this.width && y < this.length;
     }
@@ -125,10 +133,8 @@ export class Grid {
                     //console.log("chunk not found x:" + x + " y: " + y);
                     continue;
                 }
-                //debugger;
                 let imageX = x * CHUNK_WIDTH * this.tileSize;
                 let imageY = y * CHUNK_WIDTH * this.tileSize;
-                ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
                 ctx.drawImage(chunk.image, imageX, imageY);
             }
         }
@@ -146,6 +152,7 @@ class Chunk {
         this.y = y;
         this.image = null;
         this.dirty = false;
+        this.visited = false;
     }
 
     rebuild(grid) {
@@ -196,6 +203,13 @@ class Chunk {
             ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
             ctx.lineWidth = 5;
             ctx.strokeRect(0, 0, canv.width - padding, canv.height - padding);
+            let t = "chunk #: " + this.idx;
+            ctx.font = '24px serif';
+            ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+            let text = ctx.measureText(t)
+            let x = Math.floor((canv.width / 2) - (text.width / 2));
+            let y = Math.floor(canv.height - 10);
+            ctx.fillText(t, x, y);
         }
 
         let newImage = new Image();

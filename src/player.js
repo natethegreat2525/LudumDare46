@@ -12,6 +12,7 @@ export class Player {
         this.vy = 0;
         this.maxVel = 500000;
         this.radius = 10;
+        this.health = 100;
     }
 
     update(manager, grid, dt) {
