@@ -1,30 +1,24 @@
-import { Ball } from "./ball";
-import { Key } from "./key";
+//import { Key } from "./key";
 import { Mouse } from "./mouse";
+import { Grid } from "./grid";
 
 let ctx = null;
-let balls = [];
+let grid = new Grid(100, 100);
 
+/*
 function rand(low, high) {
     return Math.random()*(high-low)+low;
 }
+*/
 
 export function startGame(context) {
     ctx = context;
 
     Mouse.init(ctx.canvas);
 
-    for (let i = 0; i < 10; i++) {
-        balls.push(randomBall());
-    }
-
     if (ctx) {
         requestAnimationFrame(render);
     }
-}
-
-function randomBall() {
-    return new Ball([rand(0,800), rand(0,600)], [rand(-1,1), rand(-1,1)]);
 }
 
 function clear() {
@@ -34,17 +28,15 @@ function clear() {
 
 function render() {
     clear();
-
-    //console.log(Mouse.x, Mouse.y, Mouse.leftDown, Mouse.rightDown);
-
-    for (let ball of balls) {
-        ball.update();
-        ball.render(ctx);
+    let vec = {x: 0, y: 0};
+    let lastVec = {x: 0, y: 0};
+    let padding = 10;
+    for (let i = 0; i < grid.tiles.length; i++) {
+        vec = grid.getVector2(i);
+        vec.x *= grid.tileSize;
+        vec.y *= grid.tileSize;
+        ctx.fillRect(vec.x, vec.y, grid.tileSize-1, grid.tileSize-1);
+        lastVec = vec;
     }
-
-    if (Key.isDown(Key.SPACE)) {
-        balls.push(randomBall());
-    }
-
     requestAnimationFrame(render);
 }
