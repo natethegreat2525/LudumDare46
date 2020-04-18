@@ -70,5 +70,11 @@ function render(delta) {
     entityManager.render(ctx);
     fluidManager.render(ctx);
 
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle = 'rgba(0, 255, 0, .8)';
+    ctx.fillRect(10, 10, 100, 10);
+    ctx.fillStyle = 'rgba(255, 255, 255, .8)';
+    ctx.fillRect(screenW-110, screenH-20, 100, 10);
+
     requestAnimationFrame(render);
 }
