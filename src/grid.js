@@ -21,15 +21,14 @@ export class Grid {
         // TODO(nick)
     }
 
-    render() {
+    render(ctx) {
         let vec = {x: 0, y: 0};
         let lastVec = {x: 0, y: 0};
-        let padding = 10;
-        for (let i = 0; i < grid.tiles.length; i++) {
-            vec = grid.getVector2(i);
-            vec.x *= grid.tileSize;
-            vec.y *= grid.tileSize;
-            ctx.fillRect(vec.x, vec.y, grid.tileSize-1, grid.tileSize-1);
+        for (let i = 0; i < this.tiles.length; i++) {
+            vec = this.getVector2(i);
+            vec.x *= this.tileSize;
+            vec.y *= this.tileSize;
+            ctx.fillRect(vec.x, vec.y, this.tileSize-1, this.tileSize-1);
             lastVec = vec;
         }
     }
