@@ -1,9 +1,11 @@
 import { Ball } from "./ball";
 import { Key } from "./key";
 import { Mouse } from "./mouse";
+import { generatePlanet } from "./terrain";
 
 let ctx = null;
 let balls = [];
+let terrain = null;
 
 function rand(low, high) {
     return Math.random()*(high-low)+low;
@@ -14,9 +16,7 @@ export function startGame(context) {
 
     Mouse.init(ctx.canvas);
 
-    for (let i = 0; i < 10; i++) {
-        balls.push(randomBall());
-    }
+    terrain = generatePlanet(600, "test", 250, 4, .5, 50);
 
     if (ctx) {
         requestAnimationFrame(render);
@@ -34,7 +34,23 @@ function clear() {
 
 function render() {
     clear();
-
+    for (let x = 0; x < 600; x++) {
+        for (let y = 0; y < 600; y++) {
+            let v = terrain[x + y*600];
+            if (v == 1) {
+                ctx.fillStyle = '#765432';
+                ctx.fillRect(x,y,1,1);
+            }
+            if (v == 2) {
+                ctx.fillStyle = '#888888';
+                ctx.fillRect(x,y,1,1);
+            }
+            if (v == 3) {
+                ctx.fillStyle = '#009900';
+                ctx.fillRect(x,y,1,1);
+            }
+        }
+    }
     //console.log(Mouse.x, Mouse.y, Mouse.leftDown, Mouse.rightDown);
 
     for (let ball of balls) {
