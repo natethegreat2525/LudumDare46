@@ -11,6 +11,7 @@ const screenW = 800;
 const screenH = 600;
 
 let player = new Player(800, 800);
+//let player = new Player(0, 0);
 let cam = new Camera(500, 500, { x: player.x, y: player.y });
 let oldTime = 0;
 let mouseSubVec = { x: 0, y: 0 };
@@ -52,11 +53,15 @@ function render(delta) {
     grid.rebuildDirty();
 
     ctx.setTransform(1,0,0,1,-Math.floor(cam.position.x),-Math.floor(cam.position.y));
+    /*
     grid.renderChunks(ctx, 
                       cam.position,
                       screenW/grid.tileSize, 
                       screenH/grid.tileSize,
                       cam.zoom);
+                      */
+    grid.update();
+    grid.renderChunks(ctx);
     entities.forEach(e => e.render(ctx));
 
     requestAnimationFrame(render);

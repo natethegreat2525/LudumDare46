@@ -1,5 +1,8 @@
+import { Key } from "./key";
+
 export class Grid {
     constructor(l, w) {
+        this.debugMode = false;
         this.length = l;
         this.width = w;
         this.tileSize = 4;
@@ -28,14 +31,23 @@ export class Grid {
     }
 
     buildChunks() {
+        let idx = 0;
         for (let cx = 0; cx < this.chunkWidth; cx++) {
             for (let cy = 0; cy < this.chunkHeight; cy++) {
                 let x = cx*CHUNK_WIDTH;
                 let y = cy*CHUNK_WIDTH;
-                let chunk = new Chunk(x,y);
+                let chunk = new Chunk(idx, x, y);
                 chunk.rebuild(this);
                 this.chunks[cx + cy*this.chunkWidth] = chunk;
+                idx++;
             }
+        }
+    }
+
+    update() {
+        if (Key.isHit(Key.F2)) {
+            this.debugMode = !this.debugMode;
+            this.buildChunks();
         }
     }
 
@@ -99,17 +111,21 @@ export class Grid {
         }
     }*/
 
-    renderChunks(ctx, camVec, sizeX, sizeY, zoom) {
+    //renderChunks(ctx, camVec, sizeX, sizeY, zoom) {
+    renderChunks(ctx) {
         // TODO(nick): select chunk(s) to render
-        let renderChunks = [];
-
         for (let x = 0; x < this.chunkWidth; x++) {
             for (let y = 0; y  < this.chunkHeight; y++) {
                 let chunk = this.chunks[x + y*this.chunkWidth];
                 if (!chunk.image) {
+                    console.log("chunk not found x:" + x + " y: " + y);
                     continue;
                 }
-                ctx.drawImage(chunk.image, x*CHUNK_WIDTH*this.tileSize, y*CHUNK_WIDTH*this.tileSize);
+                //debugger;
+                let imageX = x * CHUNK_WIDTH * this.tileSize;
+                let imageY = y * CHUNK_WIDTH * this.tileSize;
+                ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
+                ctx.drawImage(chunk.image, imageX, imageY);
             }
         }
         //TODO only render on screen chunks
@@ -120,7 +136,8 @@ export class Grid {
 
 const CHUNK_WIDTH = 64;
 class Chunk {
-    constructor(x, y) {
+    constructor(idx, x, y) {
+        this.idx = idx;
         this.x = x;
         this.y = y;
         this.image = null;
@@ -129,7 +146,10 @@ class Chunk {
 
     rebuild(grid) {
         // TODO(nick): debug visualization
-        let padding = 1;
+        let padding = 0;
+        if (grid.debugMode) {
+            padding = 1;
+        }
         let canv = document.createElement('canvas');
         canv.width = CHUNK_WIDTH*grid.tileSize;
         canv.height = CHUNK_WIDTH*grid.tileSize;
@@ -148,7 +168,7 @@ class Chunk {
                     if (color !== ctx.fillStyle) {
                         ctx.fillStyle = color;
                     }
-                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize, grid.tileSize);
+                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize-padding, grid.tileSize-padding);
                 }
             }
         }
@@ -167,10 +187,17 @@ class Chunk {
                 }
             }
         }
+
+        if (grid.debugMode) {
+            ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
+            ctx.lineWidth = 5;
+            ctx.strokeRect(0, 0, canv.width - padding, canv.height - padding);
+        }
+
         let newImage = new Image();
-        newImage.src = canv.toDataURL('image/png');
         newImage.onload = () => {
             this.image = newImage;
         }
+        newImage.src = canv.toDataURL('image/png');
     }
 }
