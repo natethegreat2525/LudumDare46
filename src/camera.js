@@ -1,9 +1,9 @@
 import { Key } from "./key";
 
 export class Camera {
-    constructor(l, w, startVec) {
-        this.length = l;
-        this.width = l;
+    constructor(w, h, startVec) {
+        this.height = h;
+        this.width = w;
         this.zoom = 1.00;
         this.position = {
             x: startVec.x,
@@ -11,14 +11,18 @@ export class Camera {
         }
     }
 
-    update(ctx, vec, subVec) {
+    update(vec) {
         if (Key.isHit(Key.Z)) {
-            this.zoom += 0.25;
+            this.zoom += 0.1;
         }
         if (Key.isHit(Key.B)) {
-            this.zoom -= 0.25;
+            this.zoom -= 0.1;
         }
-        this.position.x = vec.x - subVec.x;
-        this.position.y = vec.y - subVec.y;
+        this.position.x = vec.x;
+        this.position.y = vec.y;
+    }
+
+    getCorner() {
+        return {x: this.position.x, y: this.position.y};
     }
 }

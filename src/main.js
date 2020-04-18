@@ -12,7 +12,7 @@ const screenH = 600;
 
 let player = new Player(800, 800);
 //let player = new Player(0, 0);
-let cam = new Camera(500, 500, { x: player.x, y: player.y });
+let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
 let oldTime = 0;
 let mouseSubVec = { x: 0, y: 0 };
 
@@ -47,19 +47,19 @@ function render(delta) {
 
     clear();
 
-    cam.update(ctx, { x: player.x, y: player.y }, mouseSubVec);
+    cam.update({ x: player.x, y: player.y });
 
     entities.forEach(e => e.update(dt, grid));
     grid.rebuildDirty();
+    
+    ctx.transform(1,0,0,1,screenW/2, screenH/2);
+    ctx.transform(cam.zoom, 0,
+                  0, cam.zoom,
+                  0, 0);
+    ctx.transform(1,0,
+                  0,1,
+                  -Math.floor(cam.getCorner().x), -Math.floor(cam.getCorner().y));
 
-    ctx.setTransform(1,0,0,1,-Math.floor(cam.position.x),-Math.floor(cam.position.y));
-    /*
-    grid.renderChunks(ctx, 
-                      cam.position,
-                      screenW/grid.tileSize, 
-                      screenH/grid.tileSize,
-                      cam.zoom);
-                      */
     grid.update();
     grid.renderChunks(ctx);
     entities.forEach(e => e.render(ctx));
