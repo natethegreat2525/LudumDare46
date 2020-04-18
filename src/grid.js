@@ -9,6 +9,7 @@ export class Grid {
         this.chunkWidth = Math.ceil(w/CHUNK_WIDTH);
         this.chunkHeight = Math.ceil(l/CHUNK_WIDTH);
         this.chunks = new Array(this.chunkWidth * this.chunkHeight);
+        this.dirtyChunks = new Map();
     }
 
     getIndex(x, y) {
@@ -38,7 +39,40 @@ export class Grid {
         }
     }
 
-    //TODO rebuild chunks that are updated every frame
+    getBlockValue(x, y) {
+        if (!this.boundsCheck(x, y)) {
+            return 0;
+        }
+        return this.tiles[x + y*this.width];
+    }
+
+    setBlockValue(x, y, value) {
+        if (!this.boundsCheck(x, y)) {
+            return 0;
+        }
+        let idx = x + y * this.width;
+        let oldValue = this.tiles[idx];
+        if (oldValue !== value) {
+            this.tiles[x + y*this.width] = value;
+            let chunkX = Math.floor(x / CHUNK_WIDTH);
+            let chunkY = Math.floor(y / CHUNK_WIDTH);
+            let chunk = this.chunks[chunkX + chunkY*this.chunkWidth];
+            chunk.dirty = true;
+            this.dirtyChunks.set(chunkX + ',' + chunkY, chunk);
+        }
+
+    }
+
+    rebuildDirty() {
+        for (let chunk of this.dirtyChunks.values()) {
+            if (!chunk.dirty) {
+                continue;
+            }
+
+            chunk.rebuild(this);
+        }
+        this.dirtyChunks = new Map();
+    }
 
     /*
     DONT USE, THIS IS SLOW
@@ -69,12 +103,15 @@ export class Grid {
         for (let x = 0; x < this.chunkWidth; x++) {
             for (let y = 0; y  < this.chunkHeight; y++) {
                 let chunk = this.chunks[x + y*this.chunkWidth];
+                if (!chunk.image) {
+                    continue;
+                }
                 ctx.drawImage(chunk.image, x*CHUNK_WIDTH*this.tileSize, y*CHUNK_WIDTH*this.tileSize);
             }
         }
         //TODO only render on screen chunks
-        let lowChunkX = Math.floor(offsX / CHUNK_WIDTH);
-        let lowChunkY = Math.floor(offsY / CHUNK_WIDTH);
+        //let lowChunkX = Math.floor(offsX / CHUNK_WIDTH);
+        //let lowChunkY = Math.floor(offsY / CHUNK_WIDTH);
     }
 }
 
@@ -84,6 +121,7 @@ class Chunk {
         this.x = x;
         this.y = y;
         this.image = null;
+        this.dirty = false;
     }
 
     rebuild(grid) {
@@ -124,7 +162,10 @@ class Chunk {
                 }
             }
         }
-        this.image = new Image();
-        this.image.src = canv.toDataURL('image/png');
+        let newImage = new Image();
+        newImage.src = canv.toDataURL('image/png');
+        newImage.onload = () => {
+            this.image = newImage;
+        }
     }
 }

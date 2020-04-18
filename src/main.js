@@ -45,7 +45,7 @@ function render(delta) {
     camX = entities[0].x - Mouse.width/2;
     camY = entities[0].y - Mouse.height/2;
     entities.forEach(e => e.update(dt, grid));
-
+    grid.rebuildDirty();
 
     ctx.setTransform(1,0,0,1,-Math.floor(camX),-Math.floor(camY));
     grid.renderChunks(ctx, camX/grid.tileSize, camY/grid.tileSize, screenW/grid.tileSize, screenH/grid.tileSize);

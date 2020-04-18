@@ -41,6 +41,20 @@ export class Player {
 
         this.collideClosestGrid(grid);
 
+
+        if (Key.isHit(Key.SPACE)) {
+            let bx = Math.floor(this.x/grid.tileSize);
+            let by = Math.floor(this.y/grid.tileSize);
+            for (let x = -10; x <= 10; x++) {
+                for (let y = -10; y < 10; y++) {
+                    if (x*x + y*y < 100) {
+                        if (grid.getBlockValue(x+bx, y+by) > 1) {
+                            grid.setBlockValue(x+bx, y+by, 1);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     collideClosestGrid(grid) {
