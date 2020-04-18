@@ -8,7 +8,7 @@ export class Camera {
         this.position = {
             x: startVec.x,
             y: startVec.y,
-        }
+        };
     }
 
     update(vec) {

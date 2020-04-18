@@ -2,6 +2,7 @@ import { Mouse } from "./mouse";
 import { generatePlanet } from "./terrain";
 import { Grid } from "./grid";
 import { Camera } from "./camera";
+import { HUD } from "./hud";
 import { Key } from "./key";
 import { Player } from "./player";
 import { EntityManager } from "./entitymanager";
@@ -17,8 +18,8 @@ let fluidManager = new FluidManager();
 
 let player = new Player(800, 800);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
+let hud = new HUD(screenW, screenH);
 let oldTime = 0;
-
 let entities = [];
 
 export function startGame(context) {
@@ -33,6 +34,7 @@ export function startGame(context) {
     for (let i = 0; i < 2000; i++) {
         fluidManager.particles.push(new FluidParticle(500 + Math.random()*500, 500 + Math.random() * 500));
     }
+    entities.push(player);
 
     if (ctx) {
         requestAnimationFrame(render);
@@ -57,24 +59,23 @@ function render(delta) {
     grid.rebuildDirty();
     fluidManager.update(grid, 1);
     
-    ctx.transform(1,0,0,1,screenW/2, screenH/2);
+    ctx.transform(1, 0,
+                  0, 1,
+                  screenW/2, screenH/2);
     ctx.transform(cam.zoom, 0,
                   0, cam.zoom,
                   0, 0);
-    ctx.transform(1,0,
-                  0,1,
+    ctx.transform(1, 0,
+                  0, 1,
                   -Math.floor(cam.getCorner().x), -Math.floor(cam.getCorner().y));
-
     grid.update();
+
     grid.renderChunks(ctx);
     entityManager.render(ctx);
     fluidManager.render(ctx);
+    entities.forEach(e => e.render(ctx));
 
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle = 'rgba(0, 255, 0, .8)';
-    ctx.fillRect(10, 10, 100, 10);
-    ctx.fillStyle = 'rgba(255, 255, 255, .8)';
-    ctx.fillRect(screenW-110, screenH-20, 100, 10);
+    hud.render(ctx);
 
     requestAnimationFrame(render);
 }
