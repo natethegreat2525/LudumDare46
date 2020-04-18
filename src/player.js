@@ -1,8 +1,10 @@
 import { Mouse } from "./mouse";
 import { Key } from "./key";
+import { Bullet } from "./bullet";
 
 export class Player {
     constructor(x, y) {
+        this.type = "player";
         this.x = x;
         this.y = y;
         this.angle = 0;
@@ -12,7 +14,7 @@ export class Player {
         this.radius = 10;
     }
 
-    update(dt, grid) {
+    update(manager, grid, dt) {
         let mdx = Mouse.x - Mouse.width/2;
         let mdy = Mouse.y - Mouse.height/2;
         this.angle = Math.atan2(mdy, mdx);
@@ -54,6 +56,8 @@ export class Player {
                     }
                 }
             }
+
+            manager.addEntity(new Bullet({x: this.x, y: this.y}, {x: Math.cos(this.angle)*500, y: Math.sin(this.angle)*500}));
         }
     }
 

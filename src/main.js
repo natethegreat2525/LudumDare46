@@ -4,17 +4,19 @@ import { Grid } from "./grid";
 import { Camera } from "./camera";
 import { Key } from "./key";
 import { Player } from "./player";
+import { EntityManager } from "./entitymanager";
 
 let ctx = null;
 let grid = new Grid(1200, 1200);
 const screenW = 800;
 const screenH = 600;
 
+let entityManager = new EntityManager();
+
 let player = new Player(800, 800);
 //let player = new Player(0, 0);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
 let oldTime = 0;
-let mouseSubVec = { x: 0, y: 0 };
 
 let entities = [];
 
@@ -22,13 +24,11 @@ export function startGame(context) {
     ctx = context;
 
     Mouse.init(ctx.canvas);
-    mouseSubVec.x = Mouse.width / 2;
-    mouseSubVec.y = Mouse.height / 2;
 
     grid.tiles = generatePlanet(1200, "test", 550, 4, .5, 50);
     grid.buildChunks();
 
-    entities.push(player);
+    entityManager.addEntity(player);
 
     if (ctx) {
         requestAnimationFrame(render);
@@ -49,7 +49,7 @@ function render(delta) {
 
     cam.update({ x: player.x, y: player.y });
 
-    entities.forEach(e => e.update(dt, grid));
+    entityManager.update(grid, dt);
     grid.rebuildDirty();
     
     ctx.transform(1,0,0,1,screenW/2, screenH/2);
@@ -62,7 +62,7 @@ function render(delta) {
 
     grid.update();
     grid.renderChunks(ctx);
-    entities.forEach(e => e.render(ctx));
+    entityManager.render(ctx);
 
     requestAnimationFrame(render);
 }

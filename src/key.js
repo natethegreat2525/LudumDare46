@@ -25,6 +25,9 @@ export const Key = {
     },
     
     onKeydown: function(event) {
+      if (event.repeat) {
+        return;
+      }
       this._pressed[event.keyCode] = true;
     },
     

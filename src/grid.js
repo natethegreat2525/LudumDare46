@@ -15,6 +15,10 @@ export class Grid {
         this.dirtyChunks = new Map();
     }
 
+    worldToGrid(x) {
+        return Math.floor(x / this.tileSize);
+    }
+
     getIndex(x, y) {
         return x + this.width * y;
     }
