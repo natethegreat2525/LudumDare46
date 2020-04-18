@@ -2,10 +2,15 @@
 import { Mouse } from "./mouse";
 import { generatePlanet } from "./terrain";
 import { Grid } from "./grid";
+import { Key } from "./key";
 
 let ctx = null;
-let grid = new Grid(100, 100);
-
+let grid = new Grid(600, 600);
+const screenW = 800;
+const screenH = 600;
+let camX = 500;
+let camY = 500;
+let oldTime = 0;
 /*
 function rand(low, high) {
     return Math.random()*(high-low)+low;
@@ -17,8 +22,7 @@ export function startGame(context) {
 
     Mouse.init(ctx.canvas);
 
-    terrain = generatePlanet(600, "test", 250, 4, .5, 50);
-
+    grid.tiles = generatePlanet(600, "test", 250, 4, .5, 50);
     if (ctx) {
         requestAnimationFrame(render);
     }
@@ -26,29 +30,30 @@ export function startGame(context) {
 
 function clear() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function render() {
+function render(delta) {
+    let dt = (delta-oldTime)/1000;
+    oldTime = delta;
+
     clear();
-    for (let x = 0; x < 600; x++) {
-        for (let y = 0; y < 600; y++) {
-            let v = terrain[x + y*600];
-            if (v == 1) {
-                ctx.fillStyle = '#765432';
-                ctx.fillRect(x,y,1,1);
-            }
-            if (v == 2) {
-                ctx.fillStyle = '#888888';
-                ctx.fillRect(x,y,1,1);
-            }
-            if (v == 3) {
-                ctx.fillStyle = '#009900';
-                ctx.fillRect(x,y,1,1);
-            }
-        }
+
+    if (Key.isDown(Key.A)) {
+        camX -= 100*dt;
+    }
+    if (Key.isDown(Key.D)) {
+        camX += 100*dt;
+    }
+    if (Key.isDown(Key.W)) {
+        camY -= 100*dt;
+    }
+    if (Key.isDown(Key.S)) {
+        camY += 100*dt;
     }
 
-    grid.render(ctx);
+    ctx.setTransform(1,0,0,1,-Math.floor(camX),-Math.floor(camY));
+    grid.render(ctx, camX/grid.tileSize, camY/grid.tileSize, screenW/grid.tileSize, screenH/grid.tileSize);
     requestAnimationFrame(render);
 }

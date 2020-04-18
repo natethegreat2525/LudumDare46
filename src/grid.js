@@ -4,6 +4,7 @@ export class Grid {
         this.width = w;
         this.tileSize = 8;
         this.tiles = new Int8Array(l * w);
+        this.colors = [null, "#444444", "#765432", "#888888", "#009900"];
     }
 
     getIndex(x, y) {
@@ -18,18 +19,29 @@ export class Grid {
     }
 
     boundsCheck(x, y) {
-        // TODO(nick)
+        return x >= 0 && y >= 0 && x < this.width && y < this.length;
     }
 
-    render(ctx) {
-        let vec = {x: 0, y: 0};
-        let lastVec = {x: 0, y: 0};
-        for (let i = 0; i < this.tiles.length; i++) {
-            vec = this.getVector2(i);
-            vec.x *= this.tileSize;
-            vec.y *= this.tileSize;
-            ctx.fillRect(vec.x, vec.y, this.tileSize-1, this.tileSize-1);
-            lastVec = vec;
+    render(ctx, offsX, offsY, sizeX, sizeY) {
+        offsX = Math.floor(offsX);
+        offsY = Math.floor(offsY);
+        sizeX++;
+        sizeY++;
+        for (let x = 0; x < sizeX; x++) {
+            for (let y = 0; y < sizeY; y++) {
+                let rX = x + offsX;
+                let rY = y + offsY;
+                if (this.boundsCheck(rX, rY)) {
+                    let value = this.tiles[this.getIndex(rX, rY)];
+                    let color = this.colors[value];
+                    if (color) {
+                        if (color !== ctx.fillStyle) {
+                            ctx.fillStyle = color;
+                        }
+                        ctx.fillRect(rX*this.tileSize, rY*this.tileSize, this.tileSize, this.tileSize);
+                    }
+                }
+            }
         }
     }
 }

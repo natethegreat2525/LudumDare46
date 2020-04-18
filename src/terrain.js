@@ -19,17 +19,18 @@ export function generatePlanet(width, seed, radius, surfaceVariance, interiorFil
             let selfRad = Math.sqrt(dx*dx + dy*dy);
             if (selfRad < coreRadius) {
                 //core of planet
-                arr[x + y*width] = 2;
+                arr[x + y*width] = 3;
                 continue;
             }
             let bumpyRadius = selfRad + surfaceSimplex.noise2D(x/(surfaceVariance*10), y/(surfaceVariance*10))*surfaceVariance;
             if (bumpyRadius < radius) {
+                arr[x+y*width] = 1; //interior of the planet
                 //this block is interior to the planet
                 if (interiorSimplex.noise2D(x/64, y/64) * .66 + interiorSimplex2.noise2D(x/32, y/32) * .34 < fillValueThreshold) {
                     if (bumpyRadius < radius - 5) {
-                        arr[x + y*width] = 1;
+                        arr[x + y*width] = 2;
                     } else {
-                        arr[x + y*width] = 3;
+                        arr[x + y*width] = 4;
                     }
                 }
             }
