@@ -111,7 +111,7 @@ function render(delta) {
     fluidManager.render(ctx);
     entities.forEach(e => e.render(ctx));
 
-    hud.render(ctx);
+    hud.render(ctx, player);
 
     requestAnimationFrame(render);
 }

@@ -66,12 +66,15 @@ export class Player {
             let dist = Math.sqrt(dx*dx + dy*dy);
             if (dist < this.radius) {
                 if (p.type === 1) {
-                    //TODO lava damage
                     let randVel = () => {
                         return Math.random() * 2 - 1;
                     }
                     for (let i = 0; i < 1; i++) {
                         manager.addEntity(new Particle({x: this.x, y: this.y}, {x: randVel()*300, y : randVel()*300}, '255,0,0', .2, .2));
+                    }
+                    this.health -= 0.1;
+                    if (this.health <= 0) {
+
                     }
                 }
                 this.vx = this.vx * .9 + p.vel.x*60*.1;
