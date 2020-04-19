@@ -1,16 +1,16 @@
 import { Key } from "./key";
 
 export class Grid {
-    constructor(l, w) {
+    constructor(w, h) {
         this.debugMode = false;
-        this.length = l;
+        this.height = h;
         this.width = w;
         this.tileSize = 4;
         this.tiles = null;
         this.colors =          [null, null, "#765432", "#888888", "#009900", "#bb00bb"];
         this.colorsDark = [null, "#444444", "#382716", "#333333", "#004900", "#660066"];
         this.chunkWidth = Math.ceil(w/CHUNK_WIDTH);
-        this.chunkHeight = Math.ceil(l/CHUNK_WIDTH);
+        this.chunkHeight = Math.ceil(h/CHUNK_WIDTH);
         this.chunks = new Array(this.chunkWidth * this.chunkHeight);
         this.dirtyChunks = new Map();
     }
@@ -39,7 +39,7 @@ export class Grid {
     }
 
     boundsCheck(x, y) {
-        return x >= 0 && y >= 0 && x < this.width && y < this.length;
+        return x >= 0 && y >= 0 && x < this.width && y < this.height;
     }
 
     buildChunks() {
@@ -164,12 +164,18 @@ class Chunk {
             padding = 1;
         }
         let canv = document.createElement('canvas');
-        canv.width = CHUNK_WIDTH*grid.tileSize;
-        canv.height = CHUNK_WIDTH*grid.tileSize;
+        canv.width = CHUNK_WIDTH*grid.tileSize+1;
+        canv.height = CHUNK_WIDTH*grid.tileSize+1;
         let ctx = canv.getContext('2d');
         
+        let extraPx = 0;
         for (let x = 0; x < CHUNK_WIDTH; x++) {
             for (let y = 0; y < CHUNK_WIDTH; y++) {
+                if (x === CHUNK_WIDTH-1 || y === CHUNK_WIDTH -1) {
+                    extraPx = 1;
+                } else {
+                    extraPx = 0;
+                }
                 let rX = x + this.x - 1;
                 let rY = y + this.y - 1;
                 if (rX < 0 || rY < 0) {
@@ -181,13 +187,18 @@ class Chunk {
                     if (color !== ctx.fillStyle) {
                         ctx.fillStyle = color;
                     }
-                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize-padding, grid.tileSize-padding);
+                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize-padding+extraPx, grid.tileSize-padding+extraPx);
                 }
             }
         }
         
         for (let x = 0; x < CHUNK_WIDTH; x++) {
             for (let y = 0; y < CHUNK_WIDTH; y++) {
+                if (x === CHUNK_WIDTH-1 || y === CHUNK_WIDTH -1) {
+                    extraPx = 1;
+                } else {
+                    extraPx = 0;
+                }
                 let rX = x + this.x;
                 let rY = y + this.y;
                 let value = grid.tiles[rX + rY * grid.width];
@@ -196,7 +207,7 @@ class Chunk {
                     if (color !== ctx.fillStyle) {
                         ctx.fillStyle = color;
                     }
-                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize-padding, grid.tileSize-padding);
+                    ctx.fillRect(x*grid.tileSize, y*grid.tileSize, grid.tileSize-padding+extraPx, grid.tileSize-padding+extraPx);
                 }
             }
         }

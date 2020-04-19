@@ -37,6 +37,7 @@ export function startGame(context) {
     }
 
     entityManager.addEntity(player);
+    entityManager.cam = cam;
     
     entities.push(player);
 
@@ -63,9 +64,13 @@ function render(delta) {
     grid.rebuildDirty();
     fluidManager.update(grid, 1);
     
+    let diffX = cam.position.x - grid.width*grid.tileSize/2;
+    let diffY = cam.position.y - grid.height*grid.tileSize/2;
+    cam.angle = Math.atan2(diffY, diffX) + Math.PI/2;
     ctx.transform(1, 0,
                   0, 1,
                   screenW/2, screenH/2);
+    ctx.transform(Math.cos(cam.angle), -Math.sin(cam.angle), Math.sin(cam.angle), Math.cos(cam.angle), 0, 0);
     ctx.transform(cam.zoom, 0,
                   0, cam.zoom,
                   0, 0);

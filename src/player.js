@@ -19,19 +19,25 @@ export class Player {
     update(manager, grid, dt) {
         let mdx = Mouse.x - Mouse.width/2;
         let mdy = Mouse.y - Mouse.height/2;
-        this.angle = Math.atan2(mdy, mdx);
+        let camAngle = manager.cam.angle;
+
+        this.angle = Math.atan2(mdy, mdx) + camAngle;
 
         if (Key.isDown(Key.A)) {
-            this.vx -= 1000*dt;
+            this.vx -= 1000*dt*Math.cos(camAngle);
+            this.vy -= 1000*dt*Math.sin(camAngle);
         }
         if (Key.isDown(Key.D)) {
-            this.vx += 1000*dt;
+            this.vx += 1000*dt*Math.cos(camAngle);
+            this.vy += 1000*dt*Math.sin(camAngle);
         }
         if (Key.isDown(Key.W)) {
-            this.vy -= 1000*dt;
+            this.vy -= 1000*dt*Math.cos(camAngle);
+            this.vx += 1000*dt*Math.sin(camAngle);
         }
         if (Key.isDown(Key.S)) {
-            this.vy += 1000*dt;
+            this.vy += 1000*dt*Math.cos(camAngle);
+            this.vx -= 1000*dt*Math.sin(camAngle);
         }
 
         this.vx = Math.max(Math.min(this.vx, this.maxVel), -this.maxVel);
@@ -48,7 +54,7 @@ export class Player {
         this.shootCooldown -= dt;
 
         if (Mouse.leftDown && this.shootCooldown < 0) {
-            this.shootCooldown = .5;
+            this.shootCooldown = .2;
             manager.addEntity(new Bullet({x: this.x, y: this.y}, {x: Math.cos(this.angle)*500, y: Math.sin(this.angle)*500}));
         }
     }

@@ -22,9 +22,9 @@ export class Bullet {
                 }
                 let bx = Math.floor(this.pos.x/grid.tileSize);
                 let by = Math.floor(this.pos.y/grid.tileSize);
-                for (let x = -10; x <= 10; x++) {
-                    for (let y = -10; y < 10; y++) {
-                        if (x*x + y*y < 100) {
+                for (let x = -7; x <= 7; x++) {
+                    for (let y = -7; y < 7; y++) {
+                        if (x*x + y*y < 36) {
                             if (grid.getBlockValue(x+bx, y+by) > 1) {
                                 grid.setBlockValue(x+bx, y+by, 1);
                             }
