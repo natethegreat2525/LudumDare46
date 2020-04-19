@@ -5,6 +5,10 @@ export class FluidManager {
         this.particles = [];
     }
 
+    resetParticles() {
+        this.particles.length = 0;
+    }
+
     deleteParticles() {
         for (let i = 0; i < this.particles.length; i++) {
             if (this.particles[i].deleteFlag) {

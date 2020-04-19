@@ -9,8 +9,13 @@
 // type = string type of entity
 
 export class EntityManager {
-    constructor() {
+    constructor(fluidManager) {
         this.entities = [];
+        this.fluid = fluidManager;
+    }
+
+    resetEntities() {
+        this.entities.length = 0;
     }
 
     addEntity(e) {
@@ -20,6 +25,7 @@ export class EntityManager {
 
     update(grid, dt) {
         for (let i = 0; i < this.entities.length; i++) {
+            debugger;
             this.entities[i].update(this, grid, dt);
         }
 
