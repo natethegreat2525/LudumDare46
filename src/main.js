@@ -84,7 +84,6 @@ function render(delta) {
     entities.forEach(e => e.render(ctx));
 
     hud.render(ctx, player);
-    debugger;
     gs.update(grid, player, fluidManager);
 
     requestAnimationFrame(render);
