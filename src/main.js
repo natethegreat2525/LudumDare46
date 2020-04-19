@@ -16,7 +16,7 @@ const screenH = 600;
 let entityManager = new EntityManager();
 let fluidManager = new FluidManager();
 
-let player = new Player(800, 800);
+let player = new Player(300*grid.tileSize, (300-70)*grid.tileSize);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
 let hud = new HUD(screenW, screenH);
 let oldTime = 0;
@@ -44,6 +44,14 @@ export function startGame(context) {
     grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50);
     processGridForLava(grid);
     grid.buildChunks();
+
+    for (let x = -20; x < 20; x++) {
+        for (let y = -20; y < 20; y++) {
+            if (x*x + y*y < 20*20) {
+                grid.setBlockValue(300+x,300-67+y, 1);
+            }
+        }
+    }
 
     grid.setBlockValue(300, 300-58, 5);
     for (let i = 0; i < 100; i ++) {
