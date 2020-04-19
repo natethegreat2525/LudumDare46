@@ -9,9 +9,10 @@
 // type = string type of entity
 
 export class EntityManager {
-    constructor(fluidManager) {
+    constructor(fluidManager, cam) {
         this.entities = [];
         this.fluid = fluidManager;
+        this.cam = cam;
     }
 
     resetEntities() {

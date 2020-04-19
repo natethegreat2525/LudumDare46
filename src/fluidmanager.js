@@ -20,10 +20,10 @@ export class FluidManager {
 
     update(grid, dt, entityManager) {
         let spawned = 0;
-        while (this.particles.length < 4000 && spawned < 10) {
+        while (this.particles.length < entityManager.levelConfig.waterSupply && spawned < 10) {
             spawned++;
             let a = Math.random() * 2 * Math.PI;
-            this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4, 0));
+            this.particles.push(new FluidParticle(grid.width*grid.tileSize/2 + Math.sin(a) * entityManager.levelConfig.outerRadius*4, grid.height*grid.tileSize/2 + Math.cos(a) * entityManager.levelConfig.outerRadius*4, 0));
         }
 
         this.deleteParticles();
@@ -261,7 +261,7 @@ export class FluidManager {
         for (let p of this.particles) {
             let col = 'rgba(50,100,255,.5)';
             if (p.type === 1) {
-                col = 'rgba(255,200,0,1)';
+                col = 'rgba(255,125,0,1)';
             }
             if (p.type === 2) {
                 col = 'rgba(200,200,200,1)';

@@ -23,11 +23,15 @@ export class Bullet {
                 for (let i = 0; i < 5; i++) {
                     mgr.addEntity(new Particle({x: this.pos.x, y: this.pos.y}, {x: randVel()*300, y : randVel()*300}, '255,255,255', .1, .1));
                 }
-                if (Math.random() > .98 && !this.hit) {
+                if (Math.random() > .97 && !this.hit) {
                     if (Math.random() > .5) {
-                        mgr.addEntity(new Digger(this.pos.x, this.pos.y));
+                        if (mgr.levelConfig.diggers) {
+                            mgr.addEntity(new Digger(this.pos.x, this.pos.y));
+                        }
                     } else {
-                        mgr.addEntity(new Eater(this.pos.x, this.pos.y));
+                        if (mgr.levelConfig.eaters) {
+                            mgr.addEntity(new Eater(this.pos.x, this.pos.y));
+                        }
                     }
                 }
                 let bx = Math.floor(this.pos.x/grid.tileSize);

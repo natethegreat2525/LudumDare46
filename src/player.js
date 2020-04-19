@@ -25,7 +25,7 @@ export class Player {
 
         this.angle = Math.atan2(mdy, mdx) + camAngle;
         dt = Math.max(dt, 1.5/60);
-        
+
         if (Key.isDown(Key.A)) {
             this.vx -= 500*dt*Math.cos(camAngle);
             this.vy -= 500*dt*Math.sin(camAngle);
@@ -75,10 +75,10 @@ export class Player {
                     this.hit = true;
                     this.health -= .3;
                 }
-                this.vx = this.vx * .9 + p.vel.x*60*.1;
-                this.vy = this.vy * .9 + p.vel.y*60*.1;
-                p.vel.x = p.vel.x * .9 + this.vx/60*.1;
-                p.vel.y = p.vel.y * .9 + this.vy/60*.1;
+                this.vx = this.vx * .97 + p.vel.x*60*.03;
+                this.vy = this.vy * .97 + p.vel.y*60*.03;
+                p.vel.x = p.vel.x * .97 + this.vx/60*.03;
+                p.vel.y = p.vel.y * .97 + this.vy/60*.03;
             }
         }
     }

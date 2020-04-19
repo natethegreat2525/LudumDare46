@@ -6,7 +6,8 @@ import Simplex from 'simplex-noise';
 // surfaceVariance - number of blocks the surface radius varies by
 // interiorFill - (0 to 1) percentage of interior of the planet that is filled
 // coreRadius - radius of planet core
-export function generatePlanet(width, seed, radius, surfaceVariance, interiorFill, coreRadius) {
+// lavaMode - 0 - no lava, 1 - little lava, 2 - lots of lava
+export function generatePlanet(width, seed, radius, surfaceVariance, interiorFill, coreRadius, lavaMode) {
     let surfaceSimplex = new Simplex(seed);
     let interiorSimplex = new Simplex(seed + "a");
     let interiorSimplex2 = new Simplex(seed + "b");
@@ -34,11 +35,21 @@ export function generatePlanet(width, seed, radius, surfaceVariance, interiorFil
                         arr[x + y*width] = 4;
                     }
                 }
-                let lava = lavaSimplex.noise2D(x/64, y/64);
-                if (lava > .6) {
-                    arr[x + y*width] = 6; //lava will be replaced by particles
-                } else if (lava > .5) {
-                    arr[x + y*width] = 2;
+                if (lavaMode === 2) {
+                    let lava = lavaSimplex.noise2D(x/64, y/64);
+                    if (lava > .6) {
+                        arr[x + y*width] = 6; //lava will be replaced by particles
+                    } else if (lava > .5) {
+                        arr[x + y*width] = 2;
+                    }
+                }
+                if (lavaMode === 1) {
+                    let lava = lavaSimplex.noise2D(x/128, y/128);
+                    if (lava > .8) {
+                        arr[x + y*width] = 6; //lava will be replaced by particles
+                    } else if (lava > .7) {
+                        arr[x + y*width] = 2;
+                    }
                 }
             }
         }

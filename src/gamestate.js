@@ -4,23 +4,37 @@ import { FluidManager, FluidParticle } from "./fluidmanager";
 import { Player } from "./player";
 import { Grid } from "./grid";
 import { EntityManager } from "./entitymanager";
+import { level_configs } from "./levels";
+import { Camera } from "./camera";
 
 export class GameState {
-    constructor() {
+    constructor(screenW, screenH) {
         this.isPlaying = false;
         this.currentlyDead = false;
         this.deathCount = 0;
-        this.levelCount = 1;
+        this.levelCount = 0;
         this.entities = [];
-        this.grid = new Grid(600, 600);
-        this.player = new Player(300*this.grid.tileSize, (300-70)*this.grid.tileSize);
-        this.fluidManager = new FluidManager();
-        this.entityManager = new EntityManager(this.fluidManager);
+        this.grid = null;
+        this.player = null;
+        this.fluidManager = null;
+        this.entityManager = null;
+        this.cam = null;
+        this.screenH = screenH;
+        this.screenW = screenW;
     }
 
     start() {
+        this.grid = new Grid(600, 600);
+        this.cam = new Camera(this.screenW, this.screenH, { x: 0, y: 0 });
+        this.player = new Player(300*this.grid.tileSize, (300-70)*this.grid.tileSize);
+        this.fluidManager = new FluidManager();
+        this.entityManager = new EntityManager(this.fluidManager, this.cam);
         this.entityManager.addEntity(this.player);
-        this.grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50);
+        this.grid = new Grid(600, 600);
+        let levelConfig = level_configs[this.levelCount];
+        this.entityManager.levelConfig = levelConfig;
+
+        this.grid.tiles = levelConfig.gen();
         for (let x = -40; x < 40; x++) {
             for (let y = -40; y < 40; y++) {
                 if (x*x + y*y < 20*20) {
@@ -32,22 +46,18 @@ export class GameState {
             }
         }
         this.processGridForLava();
-        this.grid.buildChunks();
         this.grid.setBlockValue(300, 300-58, 5);
         for (let i = 0; i < 100; i ++) {
             let d = Math.random() * 15;
             this.grid.setBlockValue(300 + Math.floor(Math.random() * d-d/2), 300-58 +Math.floor(d), 5);
         }
+        this.grid.buildChunks();
     }
 
     reset() {
         this.currentlyDead = false;
         this.deathCount++;
-        this.levelCount = 1;
-        this.player.health = 100;
-        this.fluidManager.resetParticles();
-        this.entityManager.resetEntities();
-        this.player = new Player(300*this.grid.tileSize, (300-70)*this.grid.tileSize);
+        this.levelCount = 0;
         this.start();
     }
 
@@ -63,6 +73,14 @@ export class GameState {
         }
         if (!this.currentlyDead) {
             this.entityManager.update(this.grid, dt);
+        }
+        this.checkWin();
+    }
+
+    checkWin() {
+        if (this.grid.totalPurple >= this.entityManager.levelConfig.goal) {
+            this.levelCount++;
+            this.start();
         }
     }
 
