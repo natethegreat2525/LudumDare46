@@ -19,7 +19,7 @@ export class HUD {
         }
         if (player.hit || this.hitAnimation) {
             this.hitAnimation = true;
-            let alpha = 0.8 * (this.currentHitAnimationLength / this.hitAnimationLength);
+            let alpha = 0.5 * (this.currentHitAnimationLength / this.hitAnimationLength);
             ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha +  ')';
             ctx.fillRect(0, 0, this.width, this.height);
             this.currentHitAnimationLength--;
