@@ -5,6 +5,7 @@ export class Bullet {
     constructor(pos, vel) {
         this.pos = pos;
         this.vel = vel;
+        this.type = "bullet";
     }
 
     update(mgr, grid, dt) {
@@ -13,7 +14,7 @@ export class Bullet {
             this.pos.x += this.vel.x*dt/subStep;
             this.pos.y += this.vel.y*dt/subStep;
 
-            if (grid.getBlockValue(grid.worldToGrid(this.pos.x), grid.worldToGrid(this.pos.y)) > 1) {
+            if (grid.getBlockValue(grid.worldToGrid(this.pos.x), grid.worldToGrid(this.pos.y)) > 1 || this.hit) {
                 this.deleteFlag = true;
                 let randVel = () => {
                     return Math.random() * 2 - 1;
@@ -21,7 +22,7 @@ export class Bullet {
                 for (let i = 0; i < 5; i++) {
                     mgr.addEntity(new Particle({x: this.pos.x, y: this.pos.y}, {x: randVel()*300, y : randVel()*300}, '255,255,255', .1, .1));
                 }
-                if (Math.random() > .98) {
+                if (Math.random() > .98 && !this.hit) {
                     mgr.addEntity(new Digger(this.pos.x, this.pos.y));
                 }
                 let bx = Math.floor(this.pos.x/grid.tileSize);

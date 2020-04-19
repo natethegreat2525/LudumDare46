@@ -1,3 +1,5 @@
+import { FluidParticle } from "./fluidmanager";
+
 //Worm that digs through the map, spawns randomly when you dig too much
 export class Digger {
     constructor(x, y) {
@@ -7,6 +9,8 @@ export class Digger {
         this.turn = (Math.random() - .5) * .03;
         this.history = [];
         this.straightTimer = 4;
+        this.type = "digger";
+        this.health = 100;
     }
 
     update(mgr, grid, dt) {
@@ -35,10 +39,39 @@ export class Digger {
                 }
             }
         }
+
+        for (let ent of mgr.entities) {
+            if (ent.type === 'bullet') {
+                for (let i = this.history.length-1; i >= 0; i--) {
+                    if (i%5 !== 0) {
+                        continue;
+                    }
+                    let dx = ent.pos.x - this.history[i].x;
+                    let dy = ent.pos.y - this.history[i].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist <= 10) {
+                        ent.hit = true;
+                        this.health -= 20;
+                        this.flash = true;
+                    }
+                }
+            }
+        }
+        if (this.health < 0) {
+            this.deleteFlag = true;
+            for (let i = 0; i < this.history.length; i++) {
+                mgr.fluid.particles.push(new FluidParticle(this.history[i].x + Math.random()*10-5, this.history[i].y+Math.random()*10-5, 1));
+            }
+        }
     }
 
     render(ctx) {
-        ctx.fillStyle = '#707070';
+        if (this.flash) {
+            ctx.fillStyle = '#ff7070';
+            this.flash = false;
+        } else {
+            ctx.fillStyle = '#707070';
+        }
         ctx.strokeStyle = '#222222';
         for (let i = this.history.length-1; i >= 0; i--) {
             if (i % 5 !== 0) {
