@@ -13,6 +13,7 @@ export class Grid {
         this.chunkHeight = Math.ceil(h/CHUNK_WIDTH);
         this.chunks = new Array(this.chunkWidth * this.chunkHeight);
         this.dirtyChunks = new Map();
+        this.totalPurple = 0;
     }
 
     worldToGrid(x) {
@@ -77,6 +78,12 @@ export class Grid {
         let idx = x + y * this.width;
         let oldValue = this.tiles[idx];
         if (oldValue !== value) {
+            if (oldValue === 5) {
+                this.totalPurple--;
+            }
+            if (value === 5) {
+                this.totalPurple++;
+            }
             this.tiles[x + y*this.width] = value;
             let chunkX = Math.floor(x / CHUNK_WIDTH);
             let chunkY = Math.floor(y / CHUNK_WIDTH);
