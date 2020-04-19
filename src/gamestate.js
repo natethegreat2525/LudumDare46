@@ -9,6 +9,7 @@ import { Camera } from "./camera";
 
 export class GameState {
     constructor(screenW, screenH) {
+        this.inMainMenu = true;
         this.isPlaying = false;
         this.currentlyDead = false;
         this.deathCount = 0;
@@ -29,6 +30,7 @@ export class GameState {
         this.player = new Player(300*this.grid.tileSize, (300-70)*this.grid.tileSize);
         this.fluidManager = new FluidManager();
         this.entityManager = new EntityManager(this.fluidManager, this.cam);
+        this.inMainMenu = true;
         this.entityManager.addEntity(this.player);
         this.grid = new Grid(600, 600);
         let levelConfig = level_configs[this.levelCount];
@@ -59,6 +61,7 @@ export class GameState {
         this.deathCount++;
         this.levelCount = 0;
         this.start();
+        this.inMainMenu = false;
     }
 
     update(dt) {
