@@ -7,6 +7,7 @@ import { Key } from "./key";
 import { Player } from "./player";
 import { EntityManager } from "./entitymanager";
 import { FluidManager, FluidParticle } from "./fluidmanager";
+import { GameState } from "./gamestate";
 
 let ctx = null;
 let grid = new Grid(600, 600);
@@ -19,48 +20,17 @@ let fluidManager = new FluidManager();
 let player = new Player(300*grid.tileSize, (300-70)*grid.tileSize);
 let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
 let hud = new HUD(screenW, screenH);
+let gs = new GameState();
 let oldTime = 0;
 let entities = [];
 
-function processGridForLava(grid) {
-    for (let x = 0; x < grid.width; x++) {
-        for (let y = 0; y < grid.height; y++) {
-            if (grid.tiles[x + y*grid.width] === 6) {
-                //lava
-                grid.tiles[x + y*grid.width] = 1;
-                if (Math.random() > .9) {
-                    fluidManager.particles.push(new FluidParticle(x*grid.tileSize, y*grid.tileSize, 1));
-                }
-            }
-        }
-    }
-}
 
 export function startGame(context) {
     ctx = context;
 
     Mouse.init(ctx.canvas);
 
-    grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50)
-
-    for (let x = -40; x < 40; x++) {
-        for (let y = -40; y < 40; y++) {
-            if (x*x + y*y < 20*20) {
-                grid.setBlockValue(300+x,300-67+y, 1);
-            }
-            if (grid.getBlockValue(x+300, y+300-67) === 6) {
-                grid.setBlockValue(x+300, y+300-67, 1);
-            }
-        }
-    }
-    processGridForLava(grid);
-    grid.buildChunks();
-
-    grid.setBlockValue(300, 300-58, 5);
-    for (let i = 0; i < 100; i ++) {
-        let d = Math.random() * 15;
-        grid.setBlockValue(300 + Math.floor(Math.random() * d-d/2), 300-58 +Math.floor(d), 5);
-    }
+    gs.start(grid, player, fluidManager)
 
     entityManager.addEntity(player);
     entityManager.fluid = fluidManager;
@@ -87,7 +57,9 @@ function render(delta) {
 
     cam.update({ x: player.x, y: player.y });
 
-    entityManager.update(grid, dt);
+    if (!gs.currentlyDead) {
+        entityManager.update(grid, dt);
+    }
     grid.rebuildDirty();
     fluidManager.update(grid, 1, entityManager);
     
@@ -112,6 +84,7 @@ function render(delta) {
     entities.forEach(e => e.render(ctx));
 
     hud.render(ctx, player);
+    gs.update(grid, player, fluidManager);
 
     requestAnimationFrame(render);
 }

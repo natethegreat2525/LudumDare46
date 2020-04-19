@@ -12,6 +12,7 @@ export const Key = {
     D: 68,
     Z: 90,
     B: 66,
+    R: 82,
     F2: 113,
     
     isDown: function(keyCode) {

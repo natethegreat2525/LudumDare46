@@ -76,7 +76,7 @@ export class Player {
                         manager.addEntity(new Particle({x: this.x, y: this.y}, {x: randVel()*300, y : randVel()*300}, '255,0,0', .2, .2));
                     }
                     this.hit = true;
-                    this.health -= 1.0;
+                    this.health -= 2.0;
                     p.deleteFlag = true;
                 }
                 this.vx = this.vx * .9 + p.vel.x*60*.1;

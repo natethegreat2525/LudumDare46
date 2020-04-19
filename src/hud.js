@@ -13,10 +13,22 @@ export class HUD {
         ctx.fillStyle = 'rgba(86, 255, 86, 1.0)';
         ctx.fillRect(10, 10, 100, 10);
         if (player.health > 0)  {
-            ctx.resetTransform();
             ctx.fillStyle = 'rgba(0, 127, 0, .8)';
             ctx.fillRect(10, 10, player.health, 10);
+        } else {
+            ctx.fillStyle = 'rgba(0, 0, 0, .8)';
+            ctx.fillRect(0, 0, this.width, this.height);
+            ctx.font = '40px cousine';
+            let text = 'DEAD';
+            let t = ctx.measureText(text)
+            ctx.fillStyle = 'rgba(255, 0, 0, .8)';
+            ctx.fillText(text, this.width/2 - t.width/2, this.height/2);
+            text = 'PRESS R TO RESTART'
+            t = ctx.measureText(text);
+            ctx.fillText(text, this.width/2 - t.width/2, this.height/2 + parseInt(ctx.font) * 2);
         }
+        // TODO: draw death screen
+
         if (player.hit || this.hitAnimation) {
             this.hitAnimation = true;
             let alpha = 0.5 * (this.currentHitAnimationLength / this.hitAnimationLength);
