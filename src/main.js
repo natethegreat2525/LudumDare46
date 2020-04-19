@@ -30,16 +30,14 @@ export function startGame(context) {
     grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50);
     grid.buildChunks();
 
-    grid.setBlockValue(300, 300-50, 5);
-    for (let i = 0; i < 20; i ++) {
-        let d = Math.random() * 6;
-        grid.setBlockValue(300 + Math.floor(Math.random() * d*2-d), 300-50 +Math.floor(d), 5);
+    grid.setBlockValue(300, 300-58, 5);
+    for (let i = 0; i < 100; i ++) {
+        let d = Math.random() * 15;
+        grid.setBlockValue(300 + Math.floor(Math.random() * d-d/2), 300-58 +Math.floor(d), 5);
     }
 
     entityManager.addEntity(player);
-    for (let i = 0; i < 2000; i++) {
-        fluidManager.particles.push(new FluidParticle(500 + Math.random()*500, 500 + Math.random() * 500));
-    }
+    
     entities.push(player);
 
     if (ctx) {

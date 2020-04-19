@@ -4,7 +4,9 @@ export class FluidManager {
     }
 
     update(grid, dt) {
-        while (this.particles.length < 2000) {
+        let spawned = 0;
+        while (this.particles.length < 2000 && spawned < 10) {
+            spawned++;
             let a = Math.random() * 2 * Math.PI;
             this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4));
         }
@@ -129,7 +131,7 @@ export class FluidManager {
     }
 
     render(ctx) {
-        ctx.fillStyle = 'rgba(0,0,255,.5)';
+        ctx.fillStyle = 'rgba(50,100,255,.5)';
         for (let p of this.particles) {
             ctx.fillRect(p.pos.x-5, p.pos.y-5, 10, 10);
         }
