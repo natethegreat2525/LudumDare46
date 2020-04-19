@@ -2,6 +2,9 @@ export class HUD {
     constructor(w, h) {
         this.height = h;
         this.width = w;
+        this.hitAnimation = false;
+        this.hitAnimationLength = 100;
+        this.currentHitAnimationLength = 100;
     }
 
     render(ctx, player) {
@@ -13,6 +16,17 @@ export class HUD {
             ctx.resetTransform();
             ctx.fillStyle = 'rgba(0, 127, 0, .8)';
             ctx.fillRect(10, 10, player.health, 10);
+        }
+        if (player.hit || this.hitAnimation) {
+            this.hitAnimation = true;
+            let alpha = 0.8 * (this.currentHitAnimationLength / this.hitAnimationLength);
+            ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha +  ')';
+            ctx.fillRect(0, 0, this.width, this.height);
+            this.currentHitAnimationLength--;
+            if (this.currentHitAnimationLength < 0) {
+                this.currentHitAnimationLength = 50;
+                this.hitAnimation = false;
+            }
         }
         /*
         ROOT health?

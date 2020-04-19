@@ -15,6 +15,7 @@ export class Player {
         this.radius = 12;
         this.health = 100;
         this.shootCooldown = 0;
+        this.hit = false;
     }
 
     update(manager, grid, dt) {
@@ -60,10 +61,12 @@ export class Player {
             manager.addEntity(new Bullet({x: this.x, y: this.y}, {x: Math.cos(this.angle)*500, y: Math.sin(this.angle)*500}));
         }
 
+        this.hit = false;
         for (let p of manager.fluid.particles) {
             let dx = p.pos.x - this.x;
             let dy = p.pos.y - this.y;
             let dist = Math.sqrt(dx*dx + dy*dy);
+
             if (dist < this.radius) {
                 if (p.type === 1) {
                     let randVel = () => {
@@ -72,6 +75,7 @@ export class Player {
                     for (let i = 0; i < 1; i++) {
                         manager.addEntity(new Particle({x: this.x, y: this.y}, {x: randVel()*300, y : randVel()*300}, '255,0,0', .2, .2));
                     }
+                    this.hit = true;
                     this.health -= 1.0;
                     p.deleteFlag = true;
                 }
