@@ -17,6 +17,9 @@ export class Camera {
         }
         if (Key.isHit(Key.B)) {
             this.zoom -= 0.1;
+            if (this.zoom <= 0.1) {
+                this.zoom = 0.1;
+            }
         }
         this.position.x = vec.x;
         this.position.y = vec.y;

@@ -11,8 +11,8 @@ import { GameState } from "./gamestate";
 
 let ctx = null;
 let grid = new Grid(600, 600);
-const screenW = 800;
-const screenH = 600;
+const screenW = 1280;
+const screenH = 720;
 
 let entityManager = new EntityManager();
 let fluidManager = new FluidManager();
@@ -84,6 +84,7 @@ function render(delta) {
     entities.forEach(e => e.render(ctx));
 
     hud.render(ctx, player);
+    debugger;
     gs.update(grid, player, fluidManager);
 
     requestAnimationFrame(render);
