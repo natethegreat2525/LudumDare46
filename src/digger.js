@@ -13,6 +13,13 @@ export class Digger {
         this.health = 100;
     }
 
+    explode(mgr) {
+        this.deleteFlag = true;
+        for (let i = 0; i < this.history.length; i++) {
+            mgr.fluid.particles.push(new FluidParticle(this.history[i].x + Math.random()*10-5, this.history[i].y+Math.random()*10-5, 1));
+        }
+    }
+
     update(mgr, grid, dt) {
         this.history.unshift({x:this.x, y:this.y});
         if (this.history.length > 40) {
@@ -33,13 +40,16 @@ export class Digger {
         for (let x = -5; x <= 5; x++) {
             for (let y = -5; y <= 5; y++) {
                 if (x*x + y*y < 10) {
-                    if (grid.getBlockValue(x+bx, y+by) > 1) {
+                    let blockValue = grid.getBlockValue(x+bx, y+by);
+                    if (blockValue > 1) {
                         grid.setBlockValue(x+bx, y+by, 1);
+                    }
+                    if (blockValue == 5) {
+                        this.explode(mgr);
                     }
                 }
             }
         }
-
         for (let ent of mgr.entities) {
             if (ent.type === 'bullet') {
                 for (let i = this.history.length-1; i >= 0; i--) {
@@ -58,10 +68,7 @@ export class Digger {
             }
         }
         if (this.health < 0) {
-            this.deleteFlag = true;
-            for (let i = 0; i < this.history.length; i++) {
-                mgr.fluid.particles.push(new FluidParticle(this.history[i].x + Math.random()*10-5, this.history[i].y+Math.random()*10-5, 1));
-            }
+            this.explode(mgr);
         }
     }
 
