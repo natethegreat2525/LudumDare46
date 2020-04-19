@@ -1,42 +1,24 @@
 import { Mouse } from "./mouse";
-import { generatePlanet } from "./terrain";
-import { Grid } from "./grid";
 import { Camera } from "./camera";
 import { HUD } from "./hud";
-import { Key } from "./key";
-import { Player } from "./player";
-import { EntityManager } from "./entitymanager";
-import { FluidManager, FluidParticle } from "./fluidmanager";
 import { GameState } from "./gamestate";
 
 let ctx = null;
-let grid = new Grid(600, 600);
 const screenW = 1280;
 const screenH = 720;
 
-let entityManager = new EntityManager();
-let fluidManager = new FluidManager();
-
-let player = new Player(300*grid.tileSize, (300-70)*grid.tileSize);
-let cam = new Camera(screenW, screenH, { x: player.x, y: player.y });
-let hud = new HUD(screenW, screenH);
 let gs = new GameState();
+let cam = new Camera(screenW, screenH, { x: gs.player.x, y: gs.player.y });
+let hud = new HUD(screenW, screenH);
 let oldTime = 0;
-let entities = [];
-
 
 export function startGame(context) {
     ctx = context;
 
     Mouse.init(ctx.canvas);
 
-    gs.start(grid, player, fluidManager)
-
-    entityManager.addEntity(player);
-    entityManager.fluid = fluidManager;
-    entityManager.cam = cam;
-    
-    entities.push(player);
+    gs.start()
+    gs.entityManager.cam = cam;
 
     if (ctx) {
         requestAnimationFrame(render);
@@ -52,19 +34,11 @@ function clear() {
 function render(delta) {
     let dt = (delta-oldTime)/1000;
     oldTime = delta;
-
     clear();
+    cam.update({ x: gs.player.x, y: gs.player.y });
 
-    cam.update({ x: player.x, y: player.y });
-
-    if (!gs.currentlyDead) {
-        entityManager.update(grid, dt);
-    }
-    grid.rebuildDirty();
-    fluidManager.update(grid, 1, entityManager);
-    
-    let diffX = cam.position.x - grid.width*grid.tileSize/2;
-    let diffY = cam.position.y - grid.height*grid.tileSize/2;
+    let diffX = cam.position.x - gs.grid.width*gs.grid.tileSize/2;
+    let diffY = cam.position.y - gs.grid.height*gs.grid.tileSize/2;
     cam.angle = Math.atan2(diffY, diffX) + Math.PI/2;
     ctx.transform(1, 0,
                   0, 1,
@@ -76,15 +50,13 @@ function render(delta) {
     ctx.transform(1, 0,
                   0, 1,
                   -Math.floor(cam.getCorner().x), -Math.floor(cam.getCorner().y));
-    grid.update();
 
-    grid.renderChunks(ctx);
-    entityManager.render(ctx);
-    fluidManager.render(ctx);
-    entities.forEach(e => e.render(ctx));
-
-    hud.render(ctx, player);
-    gs.update(grid, player, fluidManager);
+    gs.update(dt);
+    gs.grid.renderChunks(ctx);
+    gs.entityManager.render(ctx);
+    gs.fluidManager.render(ctx);
+    gs.entities.forEach(e => e.render(ctx));
+    hud.render(ctx, gs.player);
 
     requestAnimationFrame(render);
 }

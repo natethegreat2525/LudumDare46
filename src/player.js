@@ -121,7 +121,7 @@ export class Player {
     }
 
     render(ctx) {
-        var canvas = document.getElementById('myCanvas');
+        //var canvas = document.getElementById('myCanvas');
 
         ctx.fillStyle = '#ff0000';
         ctx.translate(this.x, this.y);
