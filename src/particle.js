@@ -12,7 +12,6 @@ export class Particle {
     update(mgr, grid, dt) {
         this.pos.x += this.vel.x*dt;
         this.pos.y += this.vel.y*dt;
-
         this.life -= dt;
         if (this.life < 0) {
             this.deleteFlag = true;

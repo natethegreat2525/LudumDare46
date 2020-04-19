@@ -3,6 +3,9 @@ export class GameState {
         this.isPlaying = false;
         this.currentlyDead = false;
         this.deathCount = 0;
-        this.levelCount = 0;
+        this.levelCount = 1;
+    }
+
+    update(player) {
     }
 }

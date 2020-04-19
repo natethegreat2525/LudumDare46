@@ -72,10 +72,8 @@ export class Player {
                     for (let i = 0; i < 1; i++) {
                         manager.addEntity(new Particle({x: this.x, y: this.y}, {x: randVel()*300, y : randVel()*300}, '255,0,0', .2, .2));
                     }
-                    this.health -= 0.1;
-                    if (this.health <= 0) {
-
-                    }
+                    this.health -= 1.0;
+                    p.deleteFlag = true;
                 }
                 this.vx = this.vx * .9 + p.vel.x*60*.1;
                 this.vy = this.vy * .9 + p.vel.y*60*.1;
