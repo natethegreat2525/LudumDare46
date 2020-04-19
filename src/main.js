@@ -77,7 +77,7 @@ function render(delta) {
 
     entityManager.update(grid, dt);
     grid.rebuildDirty();
-    fluidManager.update(grid, 1);
+    fluidManager.update(grid, 1, entityManager);
     
     let diffX = cam.position.x - grid.width*grid.tileSize/2;
     let diffY = cam.position.y - grid.height*grid.tileSize/2;

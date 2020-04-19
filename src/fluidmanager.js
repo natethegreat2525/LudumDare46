@@ -1,3 +1,5 @@
+import { Fire } from "./Fire";
+
 export class FluidManager {
     constructor() {
         this.particles = [];
@@ -12,7 +14,7 @@ export class FluidManager {
         }
     }
 
-    update(grid, dt) {
+    update(grid, dt, entityManager) {
         let spawned = 0;
         while (this.particles.length < 2000 && spawned < 10) {
             spawned++;
@@ -83,7 +85,7 @@ export class FluidManager {
             dy /= dist;
             particle.force.x = -dx*.01;
             particle.force.y = -dy*.01;
-            this.collideGrid(grid, particle);
+            this.collideGrid(grid, particle, entityManager);
 
             let cellX = Math.min(gridsW-1, Math.max(0, Math.floor(particle.pos.x / cellSize)));
             let cellY = Math.min(gridsH-1, Math.max(0, Math.floor(particle.pos.y / cellSize)));
@@ -189,7 +191,7 @@ export class FluidManager {
         }
     }
 
-    collideGrid(grid, particle) {
+    collideGrid(grid, particle, entityManager) {
         let tileSize = grid.tileSize;
         let radius = 10;
         if (particle.type === 2) {
@@ -208,17 +210,19 @@ export class FluidManager {
         let blockRadius = Math.ceil(radius / tileSize); 
          for (let x = -blockRadius; x <= blockRadius; x++) {
             for (let y = -blockRadius; y <= blockRadius; y++) {
-               let rX = x+gx;
+                let rX = x+gx;
                 let rY = y+gy;
                 if (grid.boundsCheck(rX, rY)) {
                     let blockVal = grid.tiles[rX + rY*grid.width];
                     if (blockVal > 1) {
                         if (blockVal === 5 && Math.abs(x) + Math.abs(y) <= 1) {
-                            particle.deleteFlag = true;
-                            grid.setBlockValue(gx, gy, 5);
-                            return;
+                            if (particle.type === 0) {
+                                particle.deleteFlag = true;
+                                grid.setBlockValue(gx, gy, 5);
+                                return;
+                            }
                         }
-                        if (blockVal === 5) {
+                        if (blockVal === 5 && particle.type === 0) {
                             continue;
                         }
                         let coordX = (rX+.5)*tileSize;
@@ -227,6 +231,10 @@ export class FluidManager {
                         let diffY = coordY - particle.pos.y;
                         let dist = Math.sqrt(diffX*diffX + diffY*diffY);
                         if (dist < radius) {
+                            if (particle.type === 1 && blockVal === 5) {
+                                grid.setBlockValue(rX, rY, 6);
+                                entityManager.entities.push(new Fire(rX, rY));
+                            }
                             let nx = diffX / dist;
                             let ny = diffY / dist;
                             let radDiff = radius - dist;
