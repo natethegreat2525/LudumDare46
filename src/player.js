@@ -46,18 +46,6 @@ export class Player {
 
 
         if (Key.isHit(Key.SPACE)) {
-            let bx = Math.floor(this.x/grid.tileSize);
-            let by = Math.floor(this.y/grid.tileSize);
-            for (let x = -10; x <= 10; x++) {
-                for (let y = -10; y < 10; y++) {
-                    if (x*x + y*y < 100) {
-                        if (grid.getBlockValue(x+bx, y+by) > 1) {
-                            grid.setBlockValue(x+bx, y+by, 1);
-                        }
-                    }
-                }
-            }
-
             manager.addEntity(new Bullet({x: this.x, y: this.y}, {x: Math.cos(this.angle)*500, y: Math.sin(this.angle)*500}));
         }
     }
