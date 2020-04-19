@@ -9,7 +9,8 @@ import Simplex from 'simplex-noise';
 export function generatePlanet(width, seed, radius, surfaceVariance, interiorFill, coreRadius) {
     let surfaceSimplex = new Simplex(seed);
     let interiorSimplex = new Simplex(seed + "a");
-    let interiorSimplex2 = new Simplex(seed + "a");
+    let interiorSimplex2 = new Simplex(seed + "b");
+    let lavaSimplex = new Simplex(seed + 'c');
     let arr = new Int8Array(width*width);
     const fillValueThreshold = interiorFill * 2 - 1;
     for (let x = 0; x < width; x++) {
@@ -32,6 +33,12 @@ export function generatePlanet(width, seed, radius, surfaceVariance, interiorFil
                     } else {
                         arr[x + y*width] = 4;
                     }
+                }
+                let lava = lavaSimplex.noise2D(x/128, y/128);
+                if (lava > .8) {
+                    arr[x + y*width] = 6; //lava will be replaced by particles
+                } else if (lava > .7) {
+                    arr[x + y*width] = 2;
                 }
             }
         }

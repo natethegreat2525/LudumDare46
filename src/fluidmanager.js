@@ -17,7 +17,7 @@ export class FluidManager {
         while (this.particles.length < 2000 && spawned < 10) {
             spawned++;
             let a = Math.random() * 2 * Math.PI;
-            this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4));
+            this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4, 0));
         }
 
         this.deleteParticles();
@@ -50,6 +50,32 @@ export class FluidManager {
             particle.densityNear = 0;
             particle.neighbors = [];
 
+            if (particle.type === 2) {
+                if (!particle.dryTimer) {
+                    particle.dryTimer = 0;
+                }
+                if (Math.abs(particle.vel.x) + Math.abs(particle.vel.y) > .3) {
+                    particle.dryTimer = 0;
+                }
+                particle.dryTimer++;
+                let resist = 1 - Math.max(0, particle.dryTimer - 100) / 400;
+                particle.vel.x *= resist;
+                particle.vel.y *= resist;
+                if (particle.dryTimer > 500) {
+                    particle.deleteFlag = true;
+                    let baseX = Math.floor(particle.pos.x/grid.tileSize);
+                    let baseY = Math.floor(particle.pos.y/grid.tileSize);
+                    for (let x = -3; x <= 3; x++) {
+                        for (let y = -3; y <= 3; y++) {
+                            let d = x*x + y*y;
+                            if (d < 4) {
+                                grid.setBlockValue(x+baseX, y+baseY, 3);
+                            }
+                        }
+                    }
+                }
+            }
+
             let dx = particle.pos.x - 300*4;
             let dy = particle.pos.y - 300*4;
             let dist = Math.sqrt(dx*dx + dy*dy);
@@ -76,6 +102,14 @@ export class FluidManager {
                     let dy = particle2.pos.y - particle1.pos.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
                     if (dist < radius) {
+                        if (particle1.type === 1 && particle2.type === 0) {
+                            particle1.type = 2;
+                            particle2.deleteFlag = true;
+                        }
+                        if (particle2.type === 1 && particle1.type === 0) {
+                            particle1.deleteFlag = true;
+                            particle2.type = 2;
+                        }
                         let q = 1 - dist / radius;
                         let qsq = q*q;
                         particle1.density += qsq;
@@ -145,19 +179,32 @@ export class FluidManager {
                 let forceX = dm * neighbor.dx / neighbor.dist - viscX;
                 let forceY = dm * neighbor.dy / neighbor.dist - viscY;
 
-                particle1.force.x -= forceX;
-                particle1.force.y -= forceY;
-                particle2.force.x += forceX;
-                particle2.force.y += forceY;
+                let p1m = 2 * particle1.mass / (particle2.mass + particle1.mass)
+                let p2m = 2 * particle2.mass / (particle2.mass + particle1.mass)
+                particle1.force.x -= forceX*p2m;
+                particle1.force.y -= forceY*p2m;
+                particle2.force.x += forceX*p1m;
+                particle2.force.y += forceY*p1m;
             }
         }
     }
 
     collideGrid(grid, particle) {
         let tileSize = grid.tileSize;
-        const radius = 10;
+        let radius = 10;
+        if (particle.type === 2) {
+            radius = 7;
+        }
         let gx = Math.floor(particle.pos.x / tileSize);
         let gy = Math.floor(particle.pos.y / tileSize);
+        if (grid.getBlockValue(gx, gy) > 1) {
+            particle.vel.x = 0;
+            particle.vel.y = 0;
+            particle.force.x = 0;
+            particle.force.y = 0;
+            particle.deleteFlag = true;
+            return;
+        }
         let blockRadius = Math.ceil(radius / tileSize); 
          for (let x = -blockRadius; x <= blockRadius; x++) {
             for (let y = -blockRadius; y <= blockRadius; y++) {
@@ -195,8 +242,17 @@ export class FluidManager {
     }
 
     render(ctx) {
-        ctx.fillStyle = 'rgba(50,100,255,.5)';
         for (let p of this.particles) {
+            let col = 'rgba(50,100,255,.5)';
+            if (p.type === 1) {
+                col = 'rgba(255,200,0,1)';
+            }
+            if (p.type === 2) {
+                col = 'rgba(200,200,200,1)';
+            }
+            if (col !== ctx.fillStyle) {
+                ctx.fillStyle = col;
+            }
             ctx.fillRect(p.pos.x-5, p.pos.y-5, 10, 10);
         }
     }
@@ -213,7 +269,9 @@ class Neighbor {
 }
 
 export class FluidParticle {
-    constructor(x, y) {
+    constructor(x, y, type) {
+        this.mass = type === 1 ? 3 : 1;
+        this.type = type;
         this.pos = {x,y};
         this.vel = {x:0, y:0};
         this.pressure = 0;

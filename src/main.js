@@ -22,12 +22,27 @@ let hud = new HUD(screenW, screenH);
 let oldTime = 0;
 let entities = [];
 
+function processGridForLava(grid) {
+    for (let x = 0; x < grid.width; x++) {
+        for (let y = 0; y < grid.height; y++) {
+            if (grid.tiles[x + y*grid.width] === 6) {
+                //lava
+                grid.tiles[x + y*grid.width] = 1;
+                if (Math.random() > .9) {
+                    fluidManager.particles.push(new FluidParticle(x*grid.tileSize, y*grid.tileSize, 1));
+                }
+            }
+        }
+    }
+}
+
 export function startGame(context) {
     ctx = context;
 
     Mouse.init(ctx.canvas);
 
     grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50);
+    processGridForLava(grid);
     grid.buildChunks();
 
     grid.setBlockValue(300, 300-58, 5);
