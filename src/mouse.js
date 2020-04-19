@@ -9,6 +9,12 @@ export const Mouse = {
     rightDown: false,
     width: 0,
     height: 0,
+    leftHit: function() {
+        if (this.leftDown) {
+            this.leftDown = false;
+            return true;
+        }
+    },
 
     init: function(el) {
         this.width = el.width;

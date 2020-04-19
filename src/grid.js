@@ -88,14 +88,16 @@ export class Grid {
     }
 
     rebuildDirty() {
+        let fixed = [];
         for (let chunk of this.dirtyChunks.values()) {
+            fixed.push(chunk);
             if (!chunk.dirty) {
                 continue;
             }
-
             chunk.rebuild(this);
+            break;
         }
-        this.dirtyChunks = new Map();
+        fixed.forEach(c => this.dirtyChunks.delete(Math.floor(c.x/CHUNK_WIDTH) + ',' + Math.floor(c.y/CHUNK_WIDTH)));
     }
 
     /*

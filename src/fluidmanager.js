@@ -3,6 +3,15 @@ export class FluidManager {
         this.particles = [];
     }
 
+    deleteParticles() {
+        for (let i = 0; i < this.particles.length; i++) {
+            if (this.particles[i].deleteFlag) {
+                this.particles.splice(i, 1);
+                i--;
+            }
+        }
+    }
+
     update(grid, dt) {
         let spawned = 0;
         while (this.particles.length < 2000 && spawned < 10) {
@@ -11,17 +20,22 @@ export class FluidManager {
             this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4));
         }
 
+        this.deleteParticles();
+
         const kNear = .1;
         const k = .05;
         const restDensity = 1;
         const radius = 20;
         const visc = .003;
-        for (let i = 0; i < this.particles.length; i++) {
-            if (this.particles[i].deleteFlag) {
-                this.particles.splice(i, 1);
-                i--;
-            }
-        }
+
+        let totW = 600*4;
+        let totH = 600*4;
+        let cellSize = 30;
+        let gridsW = Math.ceil(totW/cellSize);
+        let gridsH = Math.ceil(totH/cellSize);
+        let grids = new Array(gridsW * gridsH).fill(0);
+        grids = grids.map(g => new Array());
+        
         for (let i = 0; i < this.particles.length; i++) {
             let particle = this.particles[i];
             particle.vel.x += particle.force.x;
@@ -44,7 +58,56 @@ export class FluidManager {
             particle.force.x = -dx*.01;
             particle.force.y = -dy*.01;
             this.collideGrid(grid, particle);
+
+            let cellX = Math.min(gridsW-1, Math.max(0, Math.floor(particle.pos.x / cellSize)));
+            let cellY = Math.min(gridsH-1, Math.max(0, Math.floor(particle.pos.y / cellSize)));
+            grids[cellX + cellY*gridsW].push(particle);
         }
+
+        const calcGrid = (g1, g2) => {
+            if (g1.length === 0 || g2.length === 0) {
+                return;
+            }
+            for (let i = 0; i < g1.length; i++) {
+                let particle1 = g1[i];
+                for (let j = (g1 === g2 ? i + 1 : 0); j < g2.length; j++) {
+                    let particle2 = g2[j];
+                    let dx = particle2.pos.x - particle1.pos.x;
+                    let dy = particle2.pos.y - particle1.pos.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < radius) {
+                        let q = 1 - dist / radius;
+                        let qsq = q*q;
+                        particle1.density += qsq;
+                        particle1.densityNear += q*qsq;
+                        particle2.density += qsq;
+                        particle2.densityNear += q*qsq;
+                        particle1.neighbors.push(new Neighbor(particle2, dx, dy, dist, q));
+                    }
+                }
+            }
+        }
+
+        for (let gw = 0; gw < gridsW; gw++) {
+            for (let gh = 0; gh < gridsH; gh++) {
+                let cur = grids[gw + gh*gridsW];
+                let rightEdge = gw === gridsW-1;
+                let lowEdge = gh === gridsH-1;
+                if (!rightEdge) {
+                    calcGrid(cur, grids[gw+1+gh*gridsW]);
+                    if (!lowEdge) {
+                        calcGrid(cur, grids[gw+1+(gh+1)*gridsW]);
+                        calcGrid(cur, grids[gw+(gh+1)*gridsW]);
+                        calcGrid(grids[gw+1+gh*gridsW], grids[gw+(gh+1)*gridsW]);
+                    }
+                } else if (!lowEdge) {
+                    calcGrid(cur, grids[gw+(gh+1)*gridsW]);
+                }
+                calcGrid(cur,cur);
+            }
+        }
+        
+        /*
         for (let i = 0; i < this.particles.length; i++) {
             let particle1 = this.particles[i];
             for (let j = i+1; j < this.particles.length; j++) {
@@ -63,6 +126,7 @@ export class FluidManager {
                 }
             }
         }
+        */
         for (let i = 0; i < this.particles.length; i++) {
             let particle = this.particles[i];
             particle.pressure = k*(particle.density - restDensity);

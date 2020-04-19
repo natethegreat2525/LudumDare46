@@ -13,6 +13,7 @@ export class Player {
         this.maxVel = 500000;
         this.radius = 10;
         this.health = 100;
+        this.shootCooldown = 0;
     }
 
     update(manager, grid, dt) {
@@ -44,8 +45,10 @@ export class Player {
 
         this.collideClosestGrid(grid);
 
+        this.shootCooldown -= dt;
 
-        if (Key.isHit(Key.SPACE)) {
+        if (Mouse.leftDown && this.shootCooldown < 0) {
+            this.shootCooldown = .5;
             manager.addEntity(new Bullet({x: this.x, y: this.y}, {x: Math.cos(this.angle)*500, y: Math.sin(this.angle)*500}));
         }
     }
@@ -92,6 +95,8 @@ export class Player {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.fillRect(-10, -10, 20, 20);
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(10, -2, 4, 4);
         ctx.rotate(-this.angle);
         ctx.translate(-this.x, -this.y)
     }
