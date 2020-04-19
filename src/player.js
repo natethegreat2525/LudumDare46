@@ -1,6 +1,7 @@
 import { Mouse } from "./mouse";
 import { Key } from "./key";
 import { Bullet } from "./bullet";
+import { Particle } from "./particle";
 
 export class Player {
     constructor(x, y) {
@@ -11,7 +12,7 @@ export class Player {
         this.vx = 0;
         this.vy = 0;
         this.maxVel = 500000;
-        this.radius = 10;
+        this.radius = 12;
         this.health = 100;
         this.shootCooldown = 0;
     }
@@ -23,6 +24,7 @@ export class Player {
 
         this.angle = Math.atan2(mdy, mdx) + camAngle;
 
+        dt = Math.max(dt, 1.5/60);
         if (Key.isDown(Key.A)) {
             this.vx -= 1000*dt*Math.cos(camAngle);
             this.vy -= 1000*dt*Math.sin(camAngle);
@@ -57,6 +59,27 @@ export class Player {
             this.shootCooldown = .2;
             manager.addEntity(new Bullet({x: this.x, y: this.y}, {x: Math.cos(this.angle)*500, y: Math.sin(this.angle)*500}));
         }
+
+        for (let p of manager.fluid.particles) {
+            let dx = p.pos.x - this.x;
+            let dy = p.pos.y - this.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < this.radius) {
+                if (p.type === 1) {
+                    //TODO lava damage
+                    let randVel = () => {
+                        return Math.random() * 2 - 1;
+                    }
+                    for (let i = 0; i < 1; i++) {
+                        manager.addEntity(new Particle({x: this.x, y: this.y}, {x: randVel()*300, y : randVel()*300}, '255,0,0', .2, .2));
+                    }
+                }
+                this.vx = this.vx * .9 + p.vel.x*60*.1;
+                this.vy = this.vy * .9 + p.vel.y*60*.1;
+                p.vel.x = p.vel.x * .9 + this.vx/60*.1;
+                p.vel.y = p.vel.y * .9 + this.vy/60*.1;
+            }
+        }
     }
 
     collideClosestGrid(grid) {
@@ -64,9 +87,7 @@ export class Player {
         let gx = Math.floor(this.x / tileSize);
         let gy = Math.floor(this.y / tileSize);
         let blockRadius = Math.ceil(this.radius / tileSize); 
-        let closest = 9999;
-        let nx = 0;
-        let ny = 0;
+        let radius = 12;
         for (let x = -blockRadius; x <= blockRadius; x++) {
             for (let y = -blockRadius; y <= blockRadius; y++) {
                 let rX = x+gx;
@@ -78,21 +99,19 @@ export class Player {
                         let diffX = coordX - this.x;
                         let diffY = coordY - this.y;
                         let dist = Math.sqrt(diffX*diffX + diffY*diffY);
-                        if (dist < closest) {
-                            closest = dist;
-                            nx = diffX/dist;
-                            ny = diffY/dist;
+                        if (dist < radius) {
+                            let nx = diffX/dist;
+                            let ny = diffY/dist;
+                            this.x -= nx*(radius-dist);
+                            this.y -= ny*(radius-dist);
+                            this.vx -= nx*.2;
+                            this.vy -= ny*.2;
+                            this.vy *= .9;
+                            this.vx *= .9
                         }
                     }
                 }
             }
-        }
-        if (closest < this.radius) {
-            let fixDist = this.radius - closest;
-            this.x -= fixDist*nx;
-            this.y -= fixDist*ny;
-            this.vx *= .5;
-            this.vy *= .5;
         }
     }
 

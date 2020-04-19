@@ -81,6 +81,9 @@ export class Grid {
             let chunkX = Math.floor(x / CHUNK_WIDTH);
             let chunkY = Math.floor(y / CHUNK_WIDTH);
             let chunk = this.chunks[chunkX + chunkY*this.chunkWidth];
+            if (!chunk) {
+                return;
+            }
             chunk.dirty = true;
             this.dirtyChunks.set(chunkX + ',' + chunkY, chunk);
         }

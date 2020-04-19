@@ -34,10 +34,10 @@ export function generatePlanet(width, seed, radius, surfaceVariance, interiorFil
                         arr[x + y*width] = 4;
                     }
                 }
-                let lava = lavaSimplex.noise2D(x/128, y/128);
-                if (lava > .8) {
+                let lava = lavaSimplex.noise2D(x/64, y/64);
+                if (lava > .6) {
                     arr[x + y*width] = 6; //lava will be replaced by particles
-                } else if (lava > .7) {
+                } else if (lava > .5) {
                     arr[x + y*width] = 2;
                 }
             }

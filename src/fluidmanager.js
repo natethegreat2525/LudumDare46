@@ -16,7 +16,7 @@ export class FluidManager {
 
     update(grid, dt, entityManager) {
         let spawned = 0;
-        while (this.particles.length < 2000 && spawned < 10) {
+        while (this.particles.length < 4000 && spawned < 10) {
             spawned++;
             let a = Math.random() * 2 * Math.PI;
             this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4, 0));

@@ -41,17 +41,20 @@ export function startGame(context) {
 
     Mouse.init(ctx.canvas);
 
-    grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50);
-    processGridForLava(grid);
-    grid.buildChunks();
+    grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50)
 
-    for (let x = -20; x < 20; x++) {
-        for (let y = -20; y < 20; y++) {
+    for (let x = -40; x < 40; x++) {
+        for (let y = -40; y < 40; y++) {
             if (x*x + y*y < 20*20) {
                 grid.setBlockValue(300+x,300-67+y, 1);
             }
+            if (grid.getBlockValue(x+300, y+300-67) === 6) {
+                grid.setBlockValue(x+300, y+300-67, 1);
+            }
         }
     }
+    processGridForLava(grid);
+    grid.buildChunks();
 
     grid.setBlockValue(300, 300-58, 5);
     for (let i = 0; i < 100; i ++) {
@@ -60,6 +63,7 @@ export function startGame(context) {
     }
 
     entityManager.addEntity(player);
+    entityManager.fluid = fluidManager;
     entityManager.cam = cam;
     
     entities.push(player);
