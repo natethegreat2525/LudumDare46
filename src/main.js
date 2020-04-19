@@ -54,8 +54,8 @@ function render(delta) {
     gs.update(dt);
     gs.grid.renderChunks(ctx);
     gs.entityManager.render(ctx);
-    gs.fluidManager.render(ctx);
     gs.entities.forEach(e => e.render(ctx));
+    gs.fluidManager.render(ctx);
     hud.render(ctx, gs.player);
 
     requestAnimationFrame(render);
