@@ -25,7 +25,6 @@ export class EntityManager {
 
     update(grid, dt) {
         for (let i = 0; i < this.entities.length; i++) {
-            debugger;
             this.entities[i].update(this, grid, dt);
         }
 
