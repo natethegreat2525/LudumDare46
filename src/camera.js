@@ -12,11 +12,11 @@ export class Camera {
     }
 
     update(vec) {
-        if (Key.isHit(Key.Z)) {
-            this.zoom += 0.1;
+        if (Key.isDown(Key.Z)) {
+            this.zoom += 0.01;
         }
-        if (Key.isHit(Key.B)) {
-            this.zoom -= 0.1;
+        if (Key.isDown(Key.B)) {
+            this.zoom -= 0.01;
             if (this.zoom <= 0.1) {
                 this.zoom = 0.1;
             }
