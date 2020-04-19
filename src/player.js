@@ -97,12 +97,38 @@ export class Player {
     }
 
     render(ctx) {
+        var canvas = document.getElementById('myCanvas');
+
         ctx.fillStyle = '#ff0000';
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
-        ctx.fillRect(-10, -10, 20, 20);
+
+        var centerX = 0;
+        var centerY = 0;
+        var shipRadius = 10;
+        var cockpitRadius = 4;
+
+
+        //ctx.fillRect(-10, -10, 20, 20);
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, shipRadius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = '#BCB9B8';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, cockpitRadius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = '#2C2C2C';
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#22E403';
+        ctx.stroke();
+
         ctx.fillStyle = '#00ff00';
-        ctx.fillRect(10, -2, 4, 4);
+        ctx.fillRect(9, -2, 2, 2);
         ctx.rotate(-this.angle);
         ctx.translate(-this.x, -this.y)
     }
