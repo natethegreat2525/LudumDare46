@@ -4,12 +4,22 @@ export class FluidManager {
     }
 
     update(grid, dt) {
+        while (this.particles.length < 2000) {
+            let a = Math.random() * 2 * Math.PI;
+            this.particles.push(new FluidParticle(300*4 + Math.sin(a) * 280*4, 300*4 + Math.cos(a) * 280*4));
+        }
+
         const kNear = .1;
         const k = .05;
         const restDensity = 1;
         const radius = 20;
         const visc = .003;
-
+        for (let i = 0; i < this.particles.length; i++) {
+            if (this.particles[i].deleteFlag) {
+                this.particles.splice(i, 1);
+                i--;
+            }
+        }
         for (let i = 0; i < this.particles.length; i++) {
             let particle = this.particles[i];
             particle.vel.x += particle.force.x;
@@ -24,8 +34,8 @@ export class FluidManager {
             particle.densityNear = 0;
             particle.neighbors = [];
 
-            let dx = particle.pos.x - 600*4;
-            let dy = particle.pos.y - 600*4;
+            let dx = particle.pos.x - 300*4;
+            let dy = particle.pos.y - 300*4;
             let dist = Math.sqrt(dx*dx + dy*dy);
             dx /= dist;
             dy /= dist;
@@ -88,7 +98,16 @@ export class FluidManager {
                let rX = x+gx;
                 let rY = y+gy;
                 if (grid.boundsCheck(rX, rY)) {
-                    if (grid.tiles[rX + rY*grid.width] > 1) {
+                    let blockVal = grid.tiles[rX + rY*grid.width];
+                    if (blockVal > 1) {
+                        if (blockVal === 5 && Math.abs(x) + Math.abs(y) <= 1) {
+                            particle.deleteFlag = true;
+                            grid.setBlockValue(gx, gy, 5);
+                            return;
+                        }
+                        if (blockVal === 5) {
+                            continue;
+                        }
                         let coordX = (rX+.5)*tileSize;
                         let coordY = (rY+.5)*tileSize;
                         let diffX = coordX - particle.pos.x;

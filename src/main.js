@@ -9,7 +9,7 @@ import { EntityManager } from "./entitymanager";
 import { FluidManager, FluidParticle } from "./fluidmanager";
 
 let ctx = null;
-let grid = new Grid(1200, 1200);
+let grid = new Grid(600, 600);
 const screenW = 800;
 const screenH = 600;
 
@@ -27,8 +27,14 @@ export function startGame(context) {
 
     Mouse.init(ctx.canvas);
 
-    grid.tiles = generatePlanet(1200, "test" + Math.random(), 550, 4, .5, 50);
+    grid.tiles = generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50);
     grid.buildChunks();
+
+    grid.setBlockValue(300, 300-50, 5);
+    for (let i = 0; i < 20; i ++) {
+        let d = Math.random() * 6;
+        grid.setBlockValue(300 + Math.floor(Math.random() * d*2-d), 300-50 +Math.floor(d), 5);
+    }
 
     entityManager.addEntity(player);
     for (let i = 0; i < 2000; i++) {

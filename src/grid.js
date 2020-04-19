@@ -7,8 +7,8 @@ export class Grid {
         this.width = w;
         this.tileSize = 4;
         this.tiles = null;
-        this.colors =          [null, null, "#765432", "#888888", "#009900"];
-        this.colorsDark = [null, "#444444", "#382716", "#333333", "#004900"];
+        this.colors =          [null, null, "#765432", "#888888", "#009900", "#bb00bb"];
+        this.colorsDark = [null, "#444444", "#382716", "#333333", "#004900", "#660066"];
         this.chunkWidth = Math.ceil(w/CHUNK_WIDTH);
         this.chunkHeight = Math.ceil(l/CHUNK_WIDTH);
         this.chunks = new Array(this.chunkWidth * this.chunkHeight);
