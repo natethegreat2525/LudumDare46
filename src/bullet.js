@@ -1,5 +1,6 @@
 import { Particle } from "./particle";
 import { Digger } from "./digger";
+import { Eater } from "./eater";
 
 export class Bullet {
     constructor(pos, vel) {
@@ -23,7 +24,11 @@ export class Bullet {
                     mgr.addEntity(new Particle({x: this.pos.x, y: this.pos.y}, {x: randVel()*300, y : randVel()*300}, '255,255,255', .1, .1));
                 }
                 if (Math.random() > .98 && !this.hit) {
-                    mgr.addEntity(new Digger(this.pos.x, this.pos.y));
+                    if (Math.random() > .5) {
+                        mgr.addEntity(new Digger(this.pos.x, this.pos.y));
+                    } else {
+                        mgr.addEntity(new Eater(this.pos.x, this.pos.y));
+                    }
                 }
                 let bx = Math.floor(this.pos.x/grid.tileSize);
                 let by = Math.floor(this.pos.y/grid.tileSize);

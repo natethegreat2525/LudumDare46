@@ -24,27 +24,24 @@ export class Player {
         let camAngle = manager.cam.angle;
 
         this.angle = Math.atan2(mdy, mdx) + camAngle;
-
         dt = Math.max(dt, 1.5/60);
+        
         if (Key.isDown(Key.A)) {
-            this.vx -= 1000*dt*Math.cos(camAngle);
-            this.vy -= 1000*dt*Math.sin(camAngle);
+            this.vx -= 500*dt*Math.cos(camAngle);
+            this.vy -= 500*dt*Math.sin(camAngle);
         }
         if (Key.isDown(Key.D)) {
-            this.vx += 1000*dt*Math.cos(camAngle);
-            this.vy += 1000*dt*Math.sin(camAngle);
+            this.vx += 500*dt*Math.cos(camAngle);
+            this.vy += 500*dt*Math.sin(camAngle);
         }
         if (Key.isDown(Key.W)) {
-            this.vy -= 1000*dt*Math.cos(camAngle);
-            this.vx += 1000*dt*Math.sin(camAngle);
+            this.vy -= 500*dt*Math.cos(camAngle);
+            this.vx += 500*dt*Math.sin(camAngle);
         }
         if (Key.isDown(Key.S)) {
-            this.vy += 1000*dt*Math.cos(camAngle);
-            this.vx -= 1000*dt*Math.sin(camAngle);
+            this.vy += 500*dt*Math.cos(camAngle);
+            this.vx -= 500*dt*Math.sin(camAngle);
         }
-
-        this.vx = Math.max(Math.min(this.vx, this.maxVel), -this.maxVel);
-        this.vy = Math.max(Math.min(this.vy, this.maxVel), -this.maxVel);
 
         this.x += this.vx*dt;
         this.y += this.vy*dt;

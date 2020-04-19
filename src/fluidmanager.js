@@ -93,6 +93,10 @@ export class FluidManager {
 
             let cellX = Math.min(gridsW-1, Math.max(0, Math.floor(particle.pos.x / cellSize)));
             let cellY = Math.min(gridsH-1, Math.max(0, Math.floor(particle.pos.y / cellSize)));
+            if (isNaN(cellX) || isNaN(cellY)) {
+                particle.deleteFlag = true;
+                continue;
+            }
             grids[cellX + cellY*gridsW].push(particle);
         }
 
