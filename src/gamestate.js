@@ -24,15 +24,14 @@ export class GameState {
         this.screenW = screenW;
     }
 
-    start() {
+    start(mainMenu) {
         this.grid = new Grid(600, 600);
         this.cam = new Camera(this.screenW, this.screenH, { x: 0, y: 0 });
         this.player = new Player(300*this.grid.tileSize, (300-70)*this.grid.tileSize);
         this.fluidManager = new FluidManager();
         this.entityManager = new EntityManager(this.fluidManager, this.cam);
-        this.inMainMenu = true;
-        this.entityManager.addEntity(this.player);
-        this.grid = new Grid(600, 600);
+        this.inMainMenu = mainMenu;
+        this.entityManager.addEntity(this.player); this.grid = new Grid(600, 600);
         let levelConfig = level_configs[this.levelCount];
         this.entityManager.levelConfig = levelConfig;
 
@@ -60,8 +59,7 @@ export class GameState {
         this.currentlyDead = false;
         this.deathCount++;
         this.levelCount = 0;
-        this.start();
-        this.inMainMenu = false;
+        this.start(false);
     }
 
     update(dt) {

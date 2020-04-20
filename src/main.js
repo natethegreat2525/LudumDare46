@@ -15,13 +15,9 @@ let oldTime = 0;
 
 export function startGame(context) {
     ctx = context;
-
     Mouse.init(ctx.canvas);
-
     ui.setupMainMenu(ctx)
-
-    gs.start()
-
+    gs.start(true)
     if (ctx) {
         requestAnimationFrame(render);
     }
