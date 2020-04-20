@@ -10,7 +10,7 @@ export class Eater {
         this.vy = 0;
         this.radius = 12;
         this.health = 100;
-        this.jumpTime = Math.random()*3;
+        this.jumpTime = Math.random()*3 + 5;
         this.diffTime = 0;
         this.oldX = 0;
         this.oldY = 0;

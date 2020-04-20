@@ -8,6 +8,7 @@ export const level_configs = [
         goal: 1000,
         diggers: false,
         eaters: false,
+        message: "Welcome!\nHelp us take over these planets with a purple plant. It just needs water to grow!\nOnce it reaches critical mass, the mission is successful!"
     },
     {
         gen: () => {
@@ -29,6 +30,7 @@ export const level_configs = [
         goal: 4000,
         diggers: false,
         eaters: false,
+        message: "Watch out for lava on this planet!\nPlants are flammable!"
     },
     {
         gen: () => generatePlanet(600, "test" + Math.random(), 200, 4, .7, 50, 1),
@@ -37,7 +39,8 @@ export const level_configs = [
         goal: 4000,
         diggers: false,
         eaters: true,
-        eaterCount: 15
+        eaterCount: 5,
+        message: "Whoa! This planet appears to have some inhabitants.\nI wonder if they are friendly?"
     },
     {
         gen: () => generatePlanet(600, "test" + Math.random(), 250, 4, .5, 50, 2),
@@ -47,6 +50,7 @@ export const level_configs = [
         diggers: true,
         eaters: true,
         eaterCount: 5,
+        message: "Rumor has it this planet also has worms\nthat may hatch if you disturb them!"
     },
     {
         gen: () => generatePlanet(600, "test" + Math.random(), 270, 4, .5, 50, 2),
@@ -56,5 +60,6 @@ export const level_configs = [
         diggers: true,
         eaters: true,
         eaterCount: 5,
+        message: "We are going to need a lot to reach critical mass here."
     },
 ];

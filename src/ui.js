@@ -76,6 +76,7 @@ export class Button {
     }
 
     render(ctx) {
+        ctx.font = '40px cousine';
         ctx.beginPath();
         ctx.rect(this.position.x, this.position.y , this.w, this.h); 
         ctx.fillStyle = '#FFFFFF'; 
