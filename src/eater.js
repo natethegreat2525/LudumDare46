@@ -15,6 +15,7 @@ export class Eater {
         this.oldX = 0;
         this.oldY = 0;
         this.eating = false;
+        this.totalEaten = 0;
     }
 
     update(manager, grid, dt) {
@@ -74,7 +75,7 @@ export class Eater {
             this.vy *= .5;
         }
 
-        this.collideClosestGrid(grid);
+        this.collideClosestGrid(grid, manager);
 
         for (let p of manager.fluid.particles) {
             let dx = p.pos.x - this.x;
@@ -99,7 +100,7 @@ export class Eater {
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist <= this.radius) {
                     ent.hit = true;
-                    this.health -= 5;
+                    this.health -= 20;
                     this.flash = true;
                 }
             }
@@ -109,7 +110,7 @@ export class Eater {
         }
     }
 
-    collideClosestGrid(grid) {
+    collideClosestGrid(grid, mgr) {
         let tileSize = grid.tileSize;
         let gx = Math.floor(this.x / tileSize);
         let gy = Math.floor(this.y / tileSize);
@@ -124,7 +125,6 @@ export class Eater {
                 if (grid.boundsCheck(rX, rY)) {
                     let tile = grid.tiles[rX + rY*grid.width];
                     if (tile > 1) {
-                        
                         let coordX = (rX+.5)*tileSize;
                         let coordY = (rY+.5)*tileSize;
                         let diffX = coordX - this.x;
@@ -144,6 +144,7 @@ export class Eater {
                             this.eating = true;
                             if (dist < radius) {
                                 grid.setBlockValue(rX, rY, 1);
+                                this.totalEaten++;
                             }
                             this.vx += 20*diffX/dist;
                             this.vy += 20*diffY/dist;
@@ -154,6 +155,10 @@ export class Eater {
                     }
                 }
             }
+        }
+        if (this.totalEaten > 100) {
+            mgr.addEntity(new Eater(this.x+1, this.y));
+            this.totalEaten = 0;
         }
         if (this.eating && Math.abs(this.vx) + Math.abs(this.vy) < 10) {
             this.vx += 20;
