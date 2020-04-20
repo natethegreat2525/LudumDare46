@@ -8,6 +8,9 @@ import { Camera } from "./camera";
 import { Eater } from "./eater";
 import { LevelTransition } from "./leveltransition";
 
+const axios = require('axios').default;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+
 export class GameState {
     constructor(screenW, screenH) {
         this.inMainMenu = true;
@@ -23,6 +26,9 @@ export class GameState {
         this.screenH = screenH;
         this.screenW = screenW;
         this.levelTransition = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.highScores = []; 
     }
 
     start(mainMenu) {
@@ -36,6 +42,7 @@ export class GameState {
         let levelConfig = level_configs[this.levelCount];
         if (this.inMainMenu) {
             levelConfig = menu_config;
+            this.getHighScores();
         }
         this.entityManager.levelConfig = levelConfig;
 
@@ -67,12 +74,47 @@ export class GameState {
             this.grid.setBlockValue(300 + Math.floor(Math.random() * d-d/2), 300-58 +Math.floor(d), 5);
         }
         this.grid.buildChunks();
+        this.stateTime = new Date().getTime();
     }
 
     reset() {
         this.currentlyDead = false;
         this.deathCount++;
+        this.submitHighScore();
+        this.getHighScores();
         this.start(false);
+    }
+
+    async submitHighScore() {
+        this.endTime = new Date().getTime();
+        let delta = this.endTime- this.startTime;
+        this.startTime = new Date().getTime();
+        this.endTime = null;
+        let data = {
+            name: 'player',
+            level: this.levelCount + 1,
+            time: Math.floor((delta % (60000)) / 1000),
+        }
+        await axios.post('http://localhost:8080/score', data)
+             .then(function (response) {
+                 console.log(response);
+                 return response;
+             })
+             .catch(function (error) {
+                 console.error(error);
+             });
+    }
+
+    async getHighScores() {
+        let that = this; 
+        await axios.get('http://localhost:8080/scores')
+             .then(function (response) {
+                 that.highScores = response.data;
+                 return response.data;
+             })
+             .catch(function (error) {
+                console.log(error);
+             });
     }
 
     update(dt) {
@@ -114,6 +156,8 @@ export class GameState {
         if (this.grid.totalPurple <= 0) {
             if (!this.levelTransition) {
                 this.levelTransition = new LevelTransition("Mission Failed", () => {
+                    this.submitHighScore();
+                    this.getHighScores();
                     this.start(false);
                 }, 30);
             }

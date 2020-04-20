@@ -1,10 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"sort"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 type HighScore struct {
@@ -39,31 +42,50 @@ var (
 )
 
 func main() {
-	http.HandleFunc("/scores", GetHighScoresHandler)
-	http.HandleFunc("/score", PostHighScoreHandler)
+	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "OPTIONS", "POST","PUT", "PATCH"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "*"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
+	r.GET("/scores", GetHighScoresHandler)
+	r.POST("/score", PostHighScoreHandler)
 	log.Println("running server on port 8080")
-	http.ListenAndServe(":8080", nil)
+	r.Run()
 }
 
-func GetHighScoresHandler(w http.ResponseWriter, r *http.Request) {
+func GetHighScoresHandler(c *gin.Context) {
 	log.Println("received get request for scores")
-	w.Header().Set("Content-Type", "application/json") 
 	sort.Sort(HighScores(currentHighScores))
-	json.NewEncoder(w).Encode(currentHighScores) 
+	c.JSON(http.StatusOK, currentHighScores)
 	log.Println("successful get request for scores")
 }
 
-func PostHighScoreHandler(w http.ResponseWriter, r *http.Request) {
+func PostHighScoreHandler(c *gin.Context) {
 	log.Println("received post request for scores")
 	hs := HighScore{}
-	if err := json.NewDecoder(r.Body).Decode(&hs); err != nil {
+	if err := c.ShouldBindJSON(&hs); err != nil {
 		log.Printf("failed to decode body: %+v", err)
-		w.WriteHeader(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return 
+	}
+	if hs.Level > 5 || hs.Time < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "welp, you figured it out ... congrats.",
+		})
 	}
 	currentHighScores = append(currentHighScores, hs)
-	go reorganizeTopFive()
 	sort.Sort(HighScores(currentHighScores))
-	w.WriteHeader(http.StatusOK)
+	reorganizeTopFive()
+	c.JSON(http.StatusOK, currentHighScores)
 	log.Println("successful post request for scores")
 }
 

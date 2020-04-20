@@ -37,10 +37,6 @@ export class HUD {
             ctx.fillRect(10, 30, v, 10);
         }
 
-
-
-        // TODO: draw death screen
-
         if (player.hit || this.hitAnimation) {
             this.hitAnimation = true;
             let alpha = 0.5 * (this.currentHitAnimationLength / this.hitAnimationLength);
