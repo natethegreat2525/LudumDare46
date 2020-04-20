@@ -86,9 +86,13 @@ export class GameState {
     }
 
     checkWin() {
+        if (this.grid.totalPurple <= 0) {
+            this.levelCount = 0;
+            this.start();
+        }
         if (this.grid.totalPurple >= this.entityManager.levelConfig.goal) {
             this.levelCount++;
-            this.start();
+            this.start(false);
         }
     }
 
