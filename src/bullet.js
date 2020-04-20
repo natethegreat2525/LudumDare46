@@ -10,6 +10,10 @@ export class Bullet {
     }
 
     update(mgr, grid, dt) {
+        if (this.pos.x < 0 || this.pos.y < 0 || this.pos.x > grid.width*grid.tileSize || this.pos.y > grid.height*grid.tileSize) {
+            this.deleteFlag = true;
+            return;
+        }
         const subStep = 5;
         for (let s = 0; s < subStep; s++) {
             this.pos.x += this.vel.x*dt/subStep;

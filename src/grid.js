@@ -188,7 +188,7 @@ class Chunk {
                 }
                 let rX = x + this.x - 1;
                 let rY = y + this.y - 1;
-                if (rX < 0 || rY < 0) {
+                if (rX < 0 || rY < 0 || rX > grid.width-1 || rY > grid.height-1) {
                     continue;
                 }
                 let value = grid.tiles[rX + rY * grid.width];
@@ -211,6 +211,9 @@ class Chunk {
                 }
                 let rX = x + this.x;
                 let rY = y + this.y;
+                if (rX < 0 || rY < 0 || rX > grid.width-1 || rY > grid.height-1) {
+                    continue;
+                }
                 let value = grid.tiles[rX + rY * grid.width];
                 let color = grid.colors[value];
                 if (color) {

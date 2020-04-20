@@ -50,6 +50,8 @@ export class GameState {
                 for (let y = -40; y < 40; y++) {
                     if (x*x + y*y < 20*20) {
                         this.grid.setBlockValue(300+x,300-67+y, 1);
+                    } else if (x*x + y*y < 23*23) {
+                        this.grid.setBlockValue(300+x,300-67+y, 2);
                     }
                     if (this.grid.getBlockValue(x+300, y+300-67) === 6) {
                         this.grid.setBlockValue(x+300, y+300-67, 1);
@@ -82,6 +84,13 @@ export class GameState {
                 this.reset();
             }
         }
+        if (Key.isHit(Key.R)) {
+            this.reset();
+        }
+        if (Key.isHit(Key.M)) {
+            this.levelCount = 0;
+            this.start(true);
+        }
         if (!this.currentlyDead) {
             this.entityManager.update(this.grid, dt);
         }
@@ -108,6 +117,11 @@ export class GameState {
         if (this.grid.totalPurple >= this.entityManager.levelConfig.goal) {
             if (!this.levelTransition) {
                 this.levelCount++;
+                if (this.levelCount >= level_configs.length) {
+                    this.levelCount = 0;
+                    this.start(true);
+                    return;
+                }
                 this.levelTransition = new LevelTransition(level_configs[this.levelCount].message, () => {
                     this.start(false);
                 });

@@ -23,22 +23,40 @@ export class Player {
         let mdy = Mouse.y - Mouse.height/2;
         let camAngle = manager.cam.angle;
 
+        if (this.x < 0) {
+            this.x = 0;
+            this.vx = 0;
+        }
+        if (this.y < 0) {
+            this.y = 0;
+            this.vy = 0;
+        }
+        if (this.x > grid.width*grid.tileSize) {
+            this.x = grid.width*grid.tileSize;
+            this.vx = 0;
+        }
+        if (this.y > grid.height*grid.tileSize) {
+            this.y = grid.height*grid.tileSize;
+            this.vy = 0;
+        }
+
+
         this.angle = Math.atan2(mdy, mdx) + camAngle;
         dt = Math.max(dt, 1.5/60);
 
-        if (Key.isDown(Key.A)) {
+        if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
             this.vx -= 500*dt*Math.cos(camAngle);
             this.vy -= 500*dt*Math.sin(camAngle);
         }
-        if (Key.isDown(Key.D)) {
+        if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
             this.vx += 500*dt*Math.cos(camAngle);
             this.vy += 500*dt*Math.sin(camAngle);
         }
-        if (Key.isDown(Key.W)) {
+        if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
             this.vy -= 500*dt*Math.cos(camAngle);
             this.vx += 500*dt*Math.sin(camAngle);
         }
-        if (Key.isDown(Key.S)) {
+        if (Key.isDown(Key.S) || Key.isDown(Key.DOWN)) {
             this.vy += 500*dt*Math.cos(camAngle);
             this.vx -= 500*dt*Math.sin(camAngle);
         }

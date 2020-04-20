@@ -1,5 +1,5 @@
 import { Particle } from "./particle";
-
+let cnt = 0;
 export class Eater {
     constructor(x, y) {
         this.type = "eater";
@@ -10,32 +10,19 @@ export class Eater {
         this.vy = 0;
         this.radius = 12;
         this.health = 100;
-        this.jumpTime = Math.random()*3 + 5;
+        this.jumpTime = Math.random()*3 + 2;
         this.diffTime = 0;
         this.oldX = 0;
         this.oldY = 0;
         this.eating = false;
         this.totalEaten = 0;
+        this.cnt = cnt++;
     }
 
     update(manager, grid, dt) {
         this.angle = Math.atan2(this.y - grid.height*grid.tileSize/2, this.x - grid.width*grid.tileSize/2)
-
         dt = Math.max(dt, 1.5/60);
-        /*
-        if (Key.isDown(Key.A)) {
-            this.vx -= 1000*dt*Math.cos(this.angle);
-            this.vy -= 1000*dt*Math.sin(this.angle);
-        }
-        if (Key.isDown(Key.D)) {
-            this.vx += 1000*dt*Math.cos(this.angle);
-            this.vy += 1000*dt*Math.sin(this.angle);
-        }
-        if (Key.isDown(Key.W)) {
-            this.vy -= 1000*dt*Math.cos(this.angle);
-            this.vx += 1000*dt*Math.sin(this.angle);
-        }*/
-        
+        //console.log(this.cnt, this.x, this.y);
         if (!this.eating) {
             this.diffTime-=dt;
             if (this.diffTime < 0) {
@@ -86,6 +73,7 @@ export class Eater {
                 if (p.type === 1) {
                     this.health -= 1;
                 }
+                //this is glitchy for some reason on startup
                 this.vx = this.vx * .99 + p.vel.x*60*.01;
                 this.vy = this.vy * .99 + p.vel.y*60*.01;
                 p.vel.x = p.vel.x * .99 + this.vx/60*.01;
@@ -100,7 +88,7 @@ export class Eater {
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist <= this.radius) {
                     ent.hit = true;
-                    this.health -= 20;
+                    this.health -= 35;
                     this.flash = true;
                 }
             }
@@ -109,8 +97,8 @@ export class Eater {
                 let dy = ent.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist <= this.radius*2) {
-                    let nx = 5*dx/dist;
-                    let ny = 5*dy/dist;
+                    let nx = dx/dist;
+                    let ny = dy/dist;
                     let diffD = this.radius*2 - dist;
                     this.vx -= nx;
                     this.vy -= ny;
@@ -184,14 +172,37 @@ export class Eater {
             ctx.fillStyle = '#ff0000';
             this.flash = false;
         } else {
-            ctx.fillStyle = '#00ff00';
+            ctx.fillStyle = '#009900';
         }
+        ctx.lineWidth = 2;
         ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle);
+        let extraAngle = !this.eating ? 0 : Math.atan2(this.vy, this.vx);
+        let negArc = this.eating ? Math.PI/6 : 0;
+        ctx.rotate(this.angle + extraAngle);
 
-        ctx.fillRect(-10, -10, 20, 20);
+        ctx.beginPath();
+        ctx.arc(0,0,10, negArc+Math.PI/2, 2 * Math.PI-negArc + Math.PI/2, false);
+        if (this.eating) {
+            ctx.lineTo(0,0);
+            ctx.closePath();
+        }
+        ctx.fill();
+        if (!this.eating) {
+            ctx.strokeStyle = '#333333';
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0,0);
+            if (this.dir === -1 || this.eating) {
+                ctx.lineTo(0,10);
+            } else {
+                ctx.lineTo(0,-10);
+            }
+            ctx.stroke();
+        }
 
-        ctx.rotate(-this.angle);
+        //ctx.fillRect(-10, -10, 20, 20);
+
+        ctx.rotate(-this.angle-extraAngle);
         ctx.translate(-this.x, -this.y)
     }
 }
