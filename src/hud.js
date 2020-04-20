@@ -10,10 +10,10 @@ export class HUD {
     render(ctx, player, grid, entityManager) {
         // player health
         ctx.resetTransform();
-        ctx.fillStyle = 'rgba(86, 255, 86, 1.0)';
+        ctx.fillStyle = 'rgba(0, 127, 0, 1.0)';
         ctx.fillRect(10, 10, 100, 10);
         if (player.health > 0)  {
-            ctx.fillStyle = 'rgba(0, 127, 0, .8)';
+            ctx.fillStyle = 'rgba(86, 255, 86, 0.8)';
             ctx.fillRect(10, 10, player.health, 10);
         } else {
             ctx.fillStyle = 'rgba(0, 0, 0, .8)';
