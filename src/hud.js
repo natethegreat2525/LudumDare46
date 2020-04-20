@@ -10,13 +10,6 @@ export class HUD {
     render(ctx, player, gameState) {
         ctx.resetTransform();
 
-        //purple progress bar
-        ctx.fillStyle = 'rgba(100, 0, 100)';
-        ctx.fillRect(ctx.canvas.width / 2 - 300, ctx.canvas.height - 40, 600, 25);
-        let purpleWidth = 600 * Math.min(1, gameState.grid.totalPurple / gameState.entityManager.levelConfig.goal);
-        ctx.fillStyle = 'rgba(200, 0, 200)';
-        ctx.fillRect(ctx.canvas.width / 2 - 300, ctx.canvas.height - 40, purpleWidth, 25);
-
         // player health
         ctx.fillStyle = 'rgba(0, 127, 0, 1.0)';
         ctx.fillRect(10, 10, 100, 10);
