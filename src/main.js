@@ -50,8 +50,17 @@ function render(delta) {
     oldTime = delta;
     clear();
 
-    if (!gs.inMainMenu) {
+    //if (!gs.inMainMenu) {
         if (gs.entityManager) {
+            if (!gs.inMainMenu) {
+                gs.cam.update({ x: gs.player.x, y: gs.player.y });
+            } else {
+                let c = gs.grid.width*gs.grid.tileSize/2;
+                let a = new Date().getTime()/16000.0;
+
+                gs.cam.update({ x: c+Math.sin(a)*200*4, y: c+Math.cos(a)*200*4});
+            }
+
             ctx.transform(1, 0,
                 0, 1,
                 screenW/2, screenH/2);
@@ -59,7 +68,6 @@ function render(delta) {
             ctx.drawImage(stars, -screenW/2, -screenW/2);
             ctx.resetTransform();
 
-            gs.cam.update({ x: gs.player.x, y: gs.player.y });
 
             let diffX = gs.cam.position.x - gs.grid.width*gs.grid.tileSize/2;
             let diffY = gs.cam.position.y - gs.grid.height*gs.grid.tileSize/2;
@@ -87,9 +95,13 @@ function render(delta) {
             gs.grid.renderChunks(ctx);
             gs.entityManager.render(ctx);
             gs.fluidManager.render(ctx);
-            hud.render(ctx, gs.player, gs);
+            if (!gs.inMainMenu) {
+                hud.render(ctx, gs.player, gs);
+            }
         }
-    } else {
+    ctx.resetTransform();
+    //} else {
+    if (gs.inMainMenu) {
         let mainMenu = true;
         if (!gs.levelTransition) {
             mainMenu = ui.update(ctx);

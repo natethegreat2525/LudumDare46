@@ -36,7 +36,7 @@ export const level_configs = [
         gen: () => generatePlanet(600, "test" + Math.random(), 200, 4, .7, 50, 1),
         outerRadius: 230,
         waterSupply: 3000,
-        goal: 4000,
+        goal: 3000,
         diggers: false,
         eaters: true,
         eaterCount: 5,
@@ -72,3 +72,15 @@ export const level_configs = [
         message: "Thanks For Playing!"
     },
 ];
+
+export const menu_config = {
+    gen: () => generatePlanet(600, "test" + Math.random(), 200, 4, .5, 50, 2),
+    outerRadius: 230,
+    waterSupply: 3000,
+    goal: 4000000,
+    diggers: false,
+    eaters: true,
+    eaterCount: 15,
+    message: "",
+    noFail: true,
+};

@@ -76,8 +76,8 @@ export class Eater {
                 //this is glitchy for some reason on startup
                 this.vx = this.vx * .99 + p.vel.x*60*.01;
                 this.vy = this.vy * .99 + p.vel.y*60*.01;
-                p.vel.x = p.vel.x * .99 + this.vx/60*.01;
-                p.vel.y = p.vel.y * .99 + this.vy/60*.01;
+                p.vel.x = p.vel.x * .95 + this.vx/60*.05;
+                p.vel.y = p.vel.y * .95 + this.vy/60*.05;
             }
         }
 

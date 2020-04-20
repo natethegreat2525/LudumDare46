@@ -9,7 +9,13 @@ export class FluidManager {
         this.particles.length = 0;
     }
 
-    deleteParticles() {
+    deleteParticles(mgr) {
+        if (mgr.levelConfig.noFail && this.particles.length > 0) {
+            let idx = Math.floor(Math.random() * this.particles.length);
+            if (this.particles[idx].type === 0) {
+                this.particles.splice(idx, 1);
+            }
+        }
         for (let i = 0; i < this.particles.length; i++) {
             if (this.particles[i].deleteFlag) {
                 this.particles.splice(i, 1);
@@ -26,7 +32,7 @@ export class FluidManager {
             this.particles.push(new FluidParticle(grid.width*grid.tileSize/2 + Math.sin(a) * entityManager.levelConfig.outerRadius*4, grid.height*grid.tileSize/2 + Math.cos(a) * entityManager.levelConfig.outerRadius*4, 0));
         }
 
-        this.deleteParticles();
+        this.deleteParticles(entityManager);
 
         const kNear = .1;
         const k = .05;

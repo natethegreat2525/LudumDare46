@@ -13,11 +13,11 @@ export class UI {
         let h = 100;
         let p = {
             x: this.x / 2 - w / 2,
-            y: this.y / 2 - h / 2
+            y: this.y / 2 - h / 2 - 200
         };
         let lp = {
                 x: this.x / 2 - w / 6,
-                y: this.y / 2 + parseInt(ctx.font) / 4
+                y: this.y / 2 + parseInt(ctx.font) / 4 - 200
         };
         let startButton = new Button(w, h, p, lp, 'START');
         startButton.hit = () => {
