@@ -7,7 +7,7 @@ export class HUD {
         this.currentHitAnimationLength = 100;
     }
 
-    render(ctx, player) {
+    render(ctx, player, grid, entityManager) {
         // player health
         ctx.resetTransform();
         ctx.fillStyle = 'rgba(86, 255, 86, 1.0)';
@@ -27,6 +27,15 @@ export class HUD {
             t = ctx.measureText(text);
             ctx.fillText(text, this.width/2 - t.width/2, this.height/2 + parseInt(ctx.font) * 2);
         }
+
+        if (grid.totalPurple) {
+            ctx.fillStyle = 'rgba(128, 0, 128, 0.8)';
+            let v = 100 * (grid.totalPurple / entityManager.levelConfig.goal);
+            ctx.fillRect(10, 30, v, 10);
+        }
+        ctx.fillRect(10, 30, 100, 10);
+        ctx.fillStyle = 'rgba(128, 0, 128, 1.0)';
+
         // TODO: draw death screen
 
         if (player.hit || this.hitAnimation) {
@@ -40,10 +49,5 @@ export class HUD {
                 this.hitAnimation = false;
             }
         }
-        /*
-        ROOT health?
-        ctx.fillStyle = 'rgba(255, 255, 255, .8)';
-        ctx.fillRect(this.width-110, this.height-20, 100, 10);
-        */
     }
 }

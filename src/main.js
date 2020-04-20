@@ -56,7 +56,7 @@ function render(delta) {
         gs.entityManager.render(ctx);
         gs.entities.forEach(e => e.render(ctx));
         gs.fluidManager.render(ctx);
-        hud.render(ctx, gs.player);
+        hud.render(ctx, gs.player, gs.grid, gs.entityManager);
     } else {
         gs.inMainMenu = ui.update(ctx);
         ui.render(ctx);
