@@ -10,7 +10,7 @@ export class Eater {
         this.vy = 0;
         this.radius = 12;
         this.health = 100;
-        this.jumpTime = 0;
+        this.jumpTime = Math.random()*3;
         this.diffTime = 0;
         this.oldX = 0;
         this.oldY = 0;
@@ -51,9 +51,9 @@ export class Eater {
             this.vx -= 200*dt*Math.cos(this.angle);
 
             if (this.jumpTime < 0) {
-                this.jumpTime += 3;
-                this.vy += 200*Math.sin(this.angle);
-                this.vx += 200*Math.cos(this.angle);
+                this.jumpTime += 3 + Math.random()*.1;
+                this.vy += 300*Math.sin(this.angle);
+                this.vx += 300*Math.cos(this.angle);
             }
 
             let sx = 80*dt*Math.sin(this.angle);
@@ -102,6 +102,20 @@ export class Eater {
                     ent.hit = true;
                     this.health -= 20;
                     this.flash = true;
+                }
+            }
+            if (ent.type === 'eater' && ent !== this) {
+                let dx = ent.x - this.x;
+                let dy = ent.y - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist <= this.radius*2) {
+                    let nx = 5*dx/dist;
+                    let ny = 5*dy/dist;
+                    let diffD = this.radius*2 - dist;
+                    this.vx -= nx;
+                    this.vy -= ny;
+                    ent.vx += nx;
+                    ent.vy += ny;
                 }
             }
         }

@@ -6,6 +6,7 @@ import { Grid } from "./grid";
 import { EntityManager } from "./entitymanager";
 import { level_configs } from "./levels";
 import { Camera } from "./camera";
+import { Eater } from "./eater";
 
 export class GameState {
     constructor(screenW, screenH) {
@@ -14,7 +15,6 @@ export class GameState {
         this.currentlyDead = false;
         this.deathCount = 0;
         this.levelCount = 0;
-        this.entities = [];
         this.grid = null;
         this.player = null;
         this.fluidManager = null;
@@ -34,6 +34,13 @@ export class GameState {
         this.entityManager.addEntity(this.player); this.grid = new Grid(600, 600);
         let levelConfig = level_configs[this.levelCount];
         this.entityManager.levelConfig = levelConfig;
+
+        if (levelConfig.eaters) {
+            for (let i = 0; i < levelConfig.eaterCount; i++) {
+                let a = Math.random() * Math.PI * 2;
+                this.entityManager.addEntity(new Eater(Math.sin(a)*levelConfig.outerRadius*this.grid.tileSize+this.grid.width*this.grid.tileSize/2, Math.cos(a)*levelConfig.outerRadius*this.grid.tileSize + this.grid.width*this.grid.tileSize/2));
+            }
+        }
 
         this.grid.tiles = levelConfig.gen();
         for (let x = -40; x < 40; x++) {

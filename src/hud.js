@@ -7,10 +7,18 @@ export class HUD {
         this.currentHitAnimationLength = 100;
     }
 
-    render(ctx, player) {
-        // player health
+    render(ctx, player, gameState) {
         ctx.resetTransform();
-        ctx.fillStyle = 'rgba(86, 255, 86, 1.0)';
+
+        //purple progress bar
+        ctx.fillStyle = 'rgba(100, 0, 100)';
+        ctx.fillRect(ctx.canvas.width / 2 - 300, ctx.canvas.height - 40, 600, 25);
+        let purpleWidth = 600 * Math.min(1, gameState.grid.totalPurple / gameState.entityManager.levelConfig.goal);
+        ctx.fillStyle = 'rgba(200, 0, 200)';
+        ctx.fillRect(ctx.canvas.width / 2 - 300, ctx.canvas.height - 40, purpleWidth, 25);
+
+        // player health
+        ctx.fillStyle = 'rgba(255, 86, 86, 1.0)';
         ctx.fillRect(10, 10, 100, 10);
         if (player.health > 0)  {
             ctx.fillStyle = 'rgba(0, 127, 0, .8)';

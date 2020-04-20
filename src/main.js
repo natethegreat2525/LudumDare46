@@ -54,9 +54,8 @@ function render(delta) {
         gs.update(dt);
         gs.grid.renderChunks(ctx);
         gs.entityManager.render(ctx);
-        gs.entities.forEach(e => e.render(ctx));
         gs.fluidManager.render(ctx);
-        hud.render(ctx, gs.player);
+        hud.render(ctx, gs.player, gs);
     } else {
         gs.inMainMenu = ui.update(ctx);
         ui.render(ctx);
