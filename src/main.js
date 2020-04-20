@@ -12,10 +12,24 @@ const screenH = 720;
 let gs = new GameState(screenW, screenH);
 let hud = new HUD(screenW, screenH);
 let ui = new UI(screenW, screenH);
-
+let stars = new Image(screenW, screenH);
 let oldTime = 0;
 
 export function startGame(context) {
+    
+    let canv = document.createElement('canvas');
+    canv.width = screenW;
+    canv.height = screenW;
+    let cctx = canv.getContext('2d');
+    cctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 500; i++) {
+        let x = Math.random() * screenW;
+        let y = Math.random() * screenW;
+        let w = Math.floor(Math.random() * 1) + 1;
+        cctx.fillRect(x,y,w,w);
+    }
+    stars.src = canv.toDataURL('image/png');
+
     ctx = context;
     Mouse.init(ctx.canvas);
     ui.setupMainMenu(ctx)
@@ -38,6 +52,13 @@ function render(delta) {
 
     if (!gs.inMainMenu) {
         if (gs.entityManager) {
+            ctx.transform(1, 0,
+                0, 1,
+                screenW/2, screenH/2);
+            ctx.transform(Math.cos(gs.cam.angle), -Math.sin(gs.cam.angle), Math.sin(gs.cam.angle), Math.cos(gs.cam.angle), 0, 0);
+            ctx.drawImage(stars, -screenW/2, -screenW/2);
+            ctx.resetTransform();
+
             gs.cam.update({ x: gs.player.x, y: gs.player.y });
 
             let diffX = gs.cam.position.x - gs.grid.width*gs.grid.tileSize/2;
@@ -55,6 +76,14 @@ function render(delta) {
                         -Math.floor(gs.cam.getCorner().x), -Math.floor(gs.cam.getCorner().y));
 
             gs.update(dt);
+
+            let cx = gs.grid.width*gs.grid.tileSize/2;
+            let levelRad = (gs.entityManager.levelConfig.outerRadius-30)*gs.grid.tileSize;
+            let grad = ctx.createRadialGradient(cx,cx,levelRad,cx,cx,levelRad+180);
+            grad.addColorStop(0, '#87CEEB');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,cx*2, cx*2);
             gs.grid.renderChunks(ctx);
             gs.entityManager.render(ctx);
             gs.fluidManager.render(ctx);
@@ -69,7 +98,6 @@ function render(delta) {
         if (!mainMenu) {
             gs.levelTransition = new LevelTransition(level_configs[gs.levelCount].message, () => {
                 gs.inMainMenu = false;
-                console.log("starting");
                 gs.start(false);
             });
         }
