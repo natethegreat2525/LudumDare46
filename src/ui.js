@@ -38,7 +38,6 @@ export class UI {
                 console.log(mousePos);
                 console.log(this.buttonList[i].position);
                 if (this.isInside(mousePos, this.buttonList[i])) {
-                    debugger;
                     event = this.buttonList[i].hit();
                     if (event === "START_GAME_EVENT") {
                         return false;
@@ -56,7 +55,6 @@ export class UI {
     }
 
     isInside(pos, rect){
-        debugger;
         let r = pos.x > rect.position.x && 
                 pos.x < rect.position.x+rect.w && 
                 pos.y < rect.position.y+rect.h && 
