@@ -28,13 +28,15 @@ export class HUD {
             ctx.fillText(text, this.width/2 - t.width/2, this.height/2 + parseInt(ctx.font) * 2);
         }
 
-        if (grid.totalPurple) {
-            ctx.fillStyle = 'rgba(128, 0, 128, 0.8)';
+        ctx.fillStyle = 'rgba(72, 0, 98, 0.8)';
+        ctx.fillRect(10, 30, 100, 10);
+        if (grid.totalPurple > 0) {
+            ctx.fillStyle = 'rgba(128, 0, 128, 1.0)';
             let v = 100 * (grid.totalPurple / entityManager.levelConfig.goal);
             ctx.fillRect(10, 30, v, 10);
         }
-        ctx.fillRect(10, 30, 100, 10);
-        ctx.fillStyle = 'rgba(128, 0, 128, 1.0)';
+
+
 
         // TODO: draw death screen
 
