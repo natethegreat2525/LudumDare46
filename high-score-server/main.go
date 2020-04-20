@@ -4,27 +4,41 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
+	"sort"
 )
 
-type HighScores struct {
+type HighScore struct {
 	Name string `json:"name"`
 	Level int64 `json:"level"`
 	Time int64 `json:"time"`
 }
 
+type HighScores []HighScore
+
+func (hs HighScores) Len() int {
+	return len(hs)
+}
+
+func (hs HighScores) Swap(i int, j int) {
+	hs[i], hs[j] = hs[j], hs[i]
+}
+
+func (hs HighScores) Less(i int, j int) bool {
+	// check if higher level
+	l := hs[i].Level == hs[j].Level
+	if l {
+		t := hs[i].Time < hs[j].Time
+		return t
+	}
+	l = hs[i].Level > hs[j].Level
+	return l
+}
+
 var (
-	f *os.File
-	currentHighScores []HighScores
+	currentHighScores = make([]HighScore, 0)
 )
 
 func main() {
-	var err error
-	f, err = os.OpenFile("highscores.json", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatalf("failed to get highscores file: %+v", err)
-	}
-
 	http.HandleFunc("/scores", GetHighScoresHandler)
 	http.HandleFunc("/score", PostHighScoreHandler)
 	log.Println("running server on port 8080")
@@ -34,22 +48,27 @@ func main() {
 func GetHighScoresHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("received get request for scores")
 	w.Header().Set("Content-Type", "application/json") 
+	sort.Sort(HighScores(currentHighScores))
 	json.NewEncoder(w).Encode(currentHighScores) 
-	w.WriteHeader(http.StatusOK)
+	log.Println("successful get request for scores")
 }
 
 func PostHighScoreHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("received post request for scores")
-	hs := HighScores{}
+	hs := HighScore{}
 	if err := json.NewDecoder(r.Body).Decode(&hs); err != nil {
-		log.Fatalf("failed to decode body: %+v", err)
+		log.Printf("failed to decode body: %+v", err)
+		w.WriteHeader(http.StatusBadRequest)
 	}
 	currentHighScores = append(currentHighScores, hs)
-	b, err := json.Marshal(currentHighScores)
-	if err != nil {
-		log.Fatalf("failed to encode high scores: %+v", err)
-	}
-	w.Header().Set("Content-Type", "application/json") 
+	go reorganizeTopFive()
+	sort.Sort(HighScores(currentHighScores))
 	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	log.Println("successful post request for scores")
+}
+
+func reorganizeTopFive() {
+	if len(currentHighScores) > 5 {
+		currentHighScores = currentHighScores[:5]
+	}
 }
